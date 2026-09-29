@@ -634,7 +634,7 @@
                 price: 350,
                 desc: 'เลเวลเต็ม มีดาบคู่ Cursed Dual Katana + ผลโมจิตื่นครบ สังเกตการณ์ V2 พร้อมเล่น!',
                 status: 'ขายดี',
-                icon: '⚔️',
+                icon: '⚔️️',
                 image: null
             },
             {
@@ -737,6 +737,20 @@
             renderProducts();
             renderReviews();
             updateStatsAndBadges();
+        });
+
+        // 🟢 ระบบ Real-time Sync อัปเดตอัตโนมัติเมื่อข้อมูลในเครื่องหรือแท็บอื่นเปลี่ยนแปลง
+        window.addEventListener('storage', (event) => {
+            if ([LOCAL_STORAGE_REVIEWS_KEY, LOCAL_STORAGE_PRODUCTS_KEY, LOCAL_STORAGE_STORE_CONFIG_KEY, LOCAL_STORAGE_ADMIN_KEY].includes(event.key)) {
+                initStorageData();
+                applyStoreConfigToUI();
+                checkStoreOpeningStatus();
+                isAdminLoggedIn = localStorage.getItem(LOCAL_STORAGE_ADMIN_KEY) === 'true';
+                updateAdminUI();
+                renderProducts();
+                renderReviews();
+                updateStatsAndBadges();
+            }
         });
 
         function initStorageData() {
@@ -977,7 +991,6 @@
             if (selectInFilter) selectInFilter.innerHTML = `<option value="ALL">📦 ทุกสินค้าในร้าน</option>` + optionsHtml;
         }
 
-        // ระบบแก้ไขสถานะสินค้า (เฉพาะตอนเป็นแอดมิน)
         function editProductStatus(productId) {
             if (!isAdminLoggedIn) return;
             const prod = products.find(p => p.id === productId);
