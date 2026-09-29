@@ -447,8 +447,8 @@
 
             <form onsubmit="handleAdminLogin(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-darkchoco mb-1">Username</label>
-                    <input type="text" id="adminUser" placeholder="admin" required maxlength="80" autocomplete="username" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                    <label class="block text-xs font-bold text-darkchoco mb-1">Email แอดมิน</label>
+                    <input type="email" id="adminUser" placeholder="admin@example.com" required maxlength="160" autocomplete="username" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-darkchoco mb-1">Password</label>
@@ -609,14 +609,29 @@
     <!-- TOAST NOTIFICATIONS -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <script>
-        const LOCAL_STORAGE_REVIEWS_KEY = 'buttercake_reviews_v6';
-        const LOCAL_STORAGE_PRODUCTS_KEY = 'buttercake_products_v6';
-        const SESSION_STORAGE_ADMIN_KEY = 'buttercake_admin_session_v2';
-        const LOCAL_STORAGE_USER_LIKES_KEY = 'buttercake_user_liked_ids_v6';
-        const LOCAL_STORAGE_STORE_CONFIG_KEY = 'buttercake_store_config_v7';
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        let defaultStoreConfig = {
+    <script>
+        // =============================================================
+        // BUTTER CAKE + SUPABASE CONFIG
+        // ใส่ค่า 2 บรรทัดนี้จาก Supabase > Project Settings > API
+        // ใช้ Publishable key หรือ anon/public key เท่านั้น ห้ามใช้ service_role
+        // =============================================================
+        const SUPABASE_URL = 'https://bsyowzqzjehgcrimghvc.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzeW93enF6amVoZ2NyaW1naHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTk0OTEsImV4cCI6MjEwNjI3NTQ5MX0.ayYU2rf_jBUOe-XqaeBOHMkYCw4e3uB9RSHP_FIFIqM';
+        const SUPABASE_STORAGE_BUCKET = 'buttercake-media';
+
+        const LOCAL_STORAGE_USER_LIKES_KEY = 'buttercake_user_liked_ids_v7';
+        const LOCAL_STORAGE_LIKE_CLIENT_KEY = 'buttercake_like_client_id_v1';
+
+        const MAX_IMAGE_FILE_BYTES = 2 * 1024 * 1024;
+        const MAX_REVIEW_NAME = 60;
+        const MAX_REVIEW_COMMENT = 2000;
+        const MAX_ADMIN_REPLY = 1500;
+        const MAX_PRODUCT_TITLE = 120;
+        const MAX_PRODUCT_DESC = 600;
+
+        const defaultStoreConfig = {
             logo: 'image_a788f7.jpg',
             lineId: '@755jvmsc',
             lineLink: 'https://lin.ee/rrbLyYT',
@@ -624,120 +639,49 @@
             statusMode: 'auto'
         };
 
-        let storeConfig = {};
-
         const DEFAULT_PRODUCTS = [
-            {
-                id: 'prod-1',
-                title: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4',
-                category: 'Roblox',
-                price: 350,
-                desc: 'เลเวลเต็ม มีดาบคู่ Cursed Dual Katana + ผลโมจิตื่นครบ สังเกตการณ์ V2 พร้อมเล่น!',
-                status: 'ขายดี',
-                icon: '⚔️',
-                image: null
-            },
-            {
-                id: 'prod-2',
-                title: 'Genshin Impact AR55 + 5 ดาว 8 ตัวแน่นๆ',
-                category: 'Genshin Impact',
-                price: 790,
-                desc: 'ไอดีสะอาด ไม่เคยผูกเบอร์ มี Furina + Raiden Shogun + Mistsplitter Refined',
-                status: 'มีสินค้า',
-                icon: '🌌',
-                image: null
-            },
-            {
-                id: 'prod-3',
-                title: 'ชุดกรอบโปรไฟล์ Butter Cute Theme',
-                category: 'ของตกแต่งน่ารัก',
-                price: 59,
-                desc: 'ไฟล์ PNG ความละเอียดสูง สำหรับใส่กรอบรูป Discord, Facebook, IG คิวท์ๆ',
-                status: 'มีสินค้า',
-                icon: '🖼️',
-                image: null
-            },
-            {
-                id: 'prod-4',
-                title: 'Minecraft Premium Java & Bedrock Edition',
-                category: 'Minecraft',
-                price: 290,
-                desc: 'ไอดีแท้เปลี่ยนชื่อ เปลี่ยนสกิน เปลี่ยนเมลได้ 100% เล่นเซิร์ฟนอกได้ทุกเซิร์ฟเวอร์',
-                status: 'หมด',
-                icon: '🧱',
-                image: null
-            },
-            {
-                id: 'prod-5',
-                title: 'ชุดไอคอน ช็อกโกแลตหวานกรอบ Widget',
-                category: 'ของตกแต่งน่ารัก',
-                price: 89,
-                desc: 'ชุดแต่งหน้าจอ iOS / Android 60+ ไอคอน โทนช็อกโกแลตอบอุ่น',
-                status: 'ขายดี',
-                icon: '📱',
-                image: null
-            }
+            { id: 'preview-prod-1', title: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4', category: 'Roblox', price: 350, desc: 'เลเวลเต็ม มีดาบคู่ Cursed Dual Katana + ผลโมจิตื่นครบ สังเกตการณ์ V2 พร้อมเล่น!', status: 'ขายดี', icon: '⚔️', image: null },
+            { id: 'preview-prod-2', title: 'Genshin Impact AR55 + 5 ดาว 8 ตัวแน่นๆ', category: 'Genshin Impact', price: 790, desc: 'ไอดีสะอาด ไม่เคยผูกเบอร์ มี Furina + Raiden Shogun + Mistsplitter Refined', status: 'มีสินค้า', icon: '🌌', image: null },
+            { id: 'preview-prod-3', title: 'ชุดกรอบโปรไฟล์ Butter Cute Theme', category: 'ของตกแต่งน่ารัก', price: 59, desc: 'ไฟล์ PNG ความละเอียดสูง สำหรับใส่กรอบรูป Discord, Facebook, IG คิวท์ๆ', status: 'มีสินค้า', icon: '🖼️', image: null }
         ];
 
         const DEFAULT_REVIEWS = [
-            {
-                id: 'rev-1',
-                type: 'product',
-                productId: 'prod-1',
-                productTitle: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4',
-                userName: 'น้องมิวส์สายฟาร์ม',
-                rating: 5,
-                tags: ['ได้ไอดีชัวร์', 'แอดมินตอบไว', 'ตรงปก 100%'],
-                comment: 'ได้ไอดีไวมากกครับ กดปุ๊บแอดมินส่งรหัสให้ปั๊บ ลองเข้าดูแล้วตรงปกทุกอย่าง ดาบคู่ V4 มีจริง ไม่จกตา แนะนำร้านนี้เลยครับ 🍫✨',
-                photo: null,
-                date: '2026-09-28 14:20',
-                likes: 12,
-                adminHeart: true,
-                adminReply: 'ขอบคุณน้องมิวส์มากๆ นะค้าบ ขอให้สนุกกับการเก็บเลเวลน้า 🤎'
-            },
-            {
-                id: 'rev-2',
-                type: 'service',
-                productId: null,
-                productTitle: null,
-                userName: 'คุณแพรวพราว',
-                rating: 5,
-                tags: ['น่ารักเป็นกันเอง', 'แอดมินตอบไว'],
-                comment: 'แอดมินตอบแชทสุภาพและน่ารักมากค่ะ สอบถามเรื่องเปลี่ยนรหัสผ่านก็ช่วยสอนอย่างละเอียด ไม่หงุดหงิดเลย ประทับใจการดูแลลูกค้ามากๆ ค่ะ',
-                photo: null,
-                date: '2026-09-27 18:05',
-                likes: 8,
-                adminHeart: true,
-                adminReply: 'ยินดีให้บริการเสมอเลยค่า ยินดีต้อนรับสู่ครอบครัว Butter Cake นะคะ 🥰'
-            }
+            { id: 'preview-rev-1', type: 'product', productId: 'preview-prod-1', productTitle: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4', userName: 'น้องมิวส์สายฟาร์ม', rating: 5, tags: ['ได้ไอดีชัวร์', 'แอดมินตอบไว', 'ตรงปก 100%'], comment: 'ได้ไอดีไวมากกครับ กดปุ๊บแอดมินส่งรหัสให้ปั๊บ ลองเข้าดูแล้วตรงปกทุกอย่าง ดาบคู่ V4 มีจริง ไม่จกตา แนะนำร้านนี้เลยครับ 🍫✨', photo: null, date: '2026-09-28 14:20', likes: 12, adminHeart: true, adminReply: 'ขอบคุณน้องมิวส์มากๆ นะค้าบ ขอให้สนุกกับการเก็บเลเวลน้า 🤎' },
+            { id: 'preview-rev-2', type: 'service', productId: null, productTitle: null, userName: 'คุณแพรวพราว', rating: 5, tags: ['น่ารักเป็นกันเอง', 'แอดมินตอบไว'], comment: 'แอดมินตอบแชทสุภาพและน่ารักมากค่ะ สอบถามเรื่องเปลี่ยนรหัสผ่านก็ช่วยสอนอย่างละเอียด ไม่หงุดหงิดเลย ประทับใจการดูแลลูกค้ามากๆ ค่ะ', photo: null, date: '2026-09-27 18:05', likes: 8, adminHeart: true, adminReply: 'ยินดีให้บริการเสมอเลยค่า ยินดีต้อนรับสู่ครอบครัว Butter Cake นะคะ 🥰' }
         ];
 
-        let reviews = [];
+        let storeConfig = { ...defaultStoreConfig };
+        let storeConfigId = null;
         let products = [];
+        let reviews = [];
         let userLikedIds = [];
+        let likeClientId = null;
         let currentMainTab = 'product-reviews';
         let currentFormReviewType = 'product';
         let currentSelectedRating = 5;
         let selectedTags = [];
-        let currentPhotoBase64 = null;
+        let currentReviewPhotoFile = null;
         let isAdminLoggedIn = false;
+        let realtimeChannel = null;
+        let sb = null;
 
+        function isSupabaseConfigured() {
+            return /^https:\/\/.+\.supabase\.co\/?$/i.test(SUPABASE_URL)
+                && SUPABASE_PUBLISHABLE_KEY
+                && !SUPABASE_PUBLISHABLE_KEY.startsWith('PASTE_');
+        }
 
-        // ===== SAFETY / DATA HELPERS =====
-        // หมายเหตุ: หน้าเว็บนี้ยังเป็น static HTML จึงไม่สามารถทำ authentication
-        // ให้ปลอดภัยเทียบเท่า backend/server ได้ แต่ส่วนนี้ลดความเสี่ยงจาก XSS,
-        // URL อันตราย, ไฟล์ภาพขนาดใหญ่ และ session แอดมินค้างในเครื่อง
-
-        const ADMIN_USERNAME = 'admin';
-        // SHA-256 ของรหัสผ่านเดิม เพื่อไม่เก็บรหัสผ่านเป็นข้อความตรง ๆ ใน source
-        const ADMIN_PASSWORD_SHA256 = 'e29a401dbcd2648ab99da1ecc80518f9e98d0807a2455ca6035a4a38ac7398d5';
-        const MAX_IMAGE_FILE_BYTES = 2 * 1024 * 1024;
-        const MAX_IMAGE_DATA_URL_CHARS = 1_400_000;
-        const MAX_REVIEW_NAME = 60;
-        const MAX_REVIEW_COMMENT = 2000;
-        const MAX_ADMIN_REPLY = 1500;
-        const MAX_PRODUCT_TITLE = 120;
-        const MAX_PRODUCT_DESC = 600;
+        function initSupabaseClient() {
+            if (!isSupabaseConfigured() || !window.supabase?.createClient) return false;
+            sb = window.supabase.createClient(SUPABASE_URL.replace(/\/$/, ''), SUPABASE_PUBLISHABLE_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            });
+            return true;
+        }
 
         function clampText(value, maxLen) {
             return String(value ?? '').trim().slice(0, maxLen);
@@ -745,24 +689,19 @@
 
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>"']/g, ch => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[ch]));
         }
 
         function safeEntityId(value, fallback = '') {
             const str = String(value ?? '');
-            return /^[A-Za-z0-9_-]{1,100}$/.test(str) ? str : fallback;
+            return /^[A-Za-z0-9_-]{1,120}$/.test(str) ? str : fallback;
         }
 
         function sanitizeExternalUrl(value, fallback = '#') {
             try {
                 const url = new URL(String(value ?? '').trim());
-                if (url.protocol !== 'https:') return fallback;
-                return url.href;
+                return url.protocol === 'https:' ? url.href : fallback;
             } catch (_) {
                 return fallback;
             }
@@ -771,1227 +710,707 @@
         function safeImageSrc(value, fallback = '') {
             const src = String(value ?? '').trim();
             if (!src) return fallback;
-
-            if (/^data:image\/(?:png|jpe?g|webp);base64,[a-z0-9+/=\s]+$/i.test(src)) {
-                return src;
-            }
-
-            // อนุญาตเฉพาะไฟล์รูป relative path ภายในโฟลเดอร์เดียวกัน/โฟลเดอร์ย่อย
-            if (!src.includes('..') && /^(?:\.\/)?[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|gif)$/i.test(src)) {
-                return src;
-            }
-
-            return fallback;
-        }
-
-        function saveJSON(key, value, errorMessage = 'พื้นที่จัดเก็บในเบราว์เซอร์เต็ม กรุณาลดจำนวน/ขนาดรูปภาพ') {
             try {
-                localStorage.setItem(key, JSON.stringify(value));
-                return true;
-            } catch (err) {
-                console.error('Storage error:', err);
-                showToast(errorMessage, 'error');
-                return false;
-            }
-        }
-
-        function normalizePersistentData() {
-            storeConfig = {
-                logo: safeImageSrc(storeConfig?.logo, defaultStoreConfig.logo),
-                lineId: clampText(storeConfig?.lineId || defaultStoreConfig.lineId, 80),
-                lineLink: sanitizeExternalUrl(storeConfig?.lineLink, defaultStoreConfig.lineLink),
-                fbLink: sanitizeExternalUrl(storeConfig?.fbLink, defaultStoreConfig.fbLink),
-                statusMode: ['auto', 'open', 'closed'].includes(storeConfig?.statusMode) ? storeConfig.statusMode : 'auto'
-            };
-
-            products = Array.isArray(products) ? products.map((p, index) => ({
-                id: safeEntityId(p?.id, `prod-safe-${index}`),
-                title: clampText(p?.title, MAX_PRODUCT_TITLE) || 'สินค้า Butter Cake',
-                category: clampText(p?.category, 80) || 'สินค้าอื่นๆ',
-                price: Number.isFinite(Number(p?.price)) ? Math.max(0, Math.min(10000000, Number(p.price))) : 0,
-                desc: clampText(p?.desc, MAX_PRODUCT_DESC),
-                status: ['มีสินค้า', 'ขายดี', 'หมด'].includes(p?.status) ? p.status : 'มีสินค้า',
-                icon: clampText(p?.icon, 8) || '🎁',
-                image: safeImageSrc(p?.image, null)
-            })) : [];
-
-            reviews = Array.isArray(reviews) ? reviews.map((r, index) => ({
-                id: safeEntityId(r?.id, `rev-safe-${index}`),
-                type: r?.type === 'service' ? 'service' : 'product',
-                productId: r?.productId ? safeEntityId(r.productId, null) : null,
-                productTitle: r?.productTitle ? clampText(r.productTitle, MAX_PRODUCT_TITLE) : null,
-                userName: clampText(r?.userName, MAX_REVIEW_NAME) || 'ลูกค้า',
-                rating: Math.max(1, Math.min(5, parseInt(r?.rating, 10) || 5)),
-                tags: Array.isArray(r?.tags) ? r.tags.slice(0, 8).map(t => clampText(t, 60)) : [],
-                comment: clampText(r?.comment, MAX_REVIEW_COMMENT),
-                photo: safeImageSrc(r?.photo, null),
-                date: clampText(r?.date, 40),
-                likes: Math.max(0, Math.min(1000000, parseInt(r?.likes, 10) || 0)),
-                adminHeart: Boolean(r?.adminHeart),
-                adminReply: r?.adminReply ? clampText(r.adminReply, MAX_ADMIN_REPLY) : null
-            })) : [];
-
-            userLikedIds = Array.isArray(userLikedIds)
-                ? userLikedIds.map(id => safeEntityId(id)).filter(Boolean)
-                : [];
-        }
-
-        function requireAdmin() {
-            const sessionOk = sessionStorage.getItem(SESSION_STORAGE_ADMIN_KEY) === '1';
-            if (!isAdminLoggedIn || !sessionOk) {
-                isAdminLoggedIn = false;
-                updateAdminUI();
-                showToast('เซสชันแอดมินหมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
-                return false;
-            }
-            return true;
-        }
-
-        async function sha256Hex(value) {
-            if (!window.crypto?.subtle) {
-                throw new Error('Web Crypto is unavailable. Please open this page in a modern browser.');
-            }
-            const bytes = new TextEncoder().encode(value);
-            const digest = await crypto.subtle.digest('SHA-256', bytes);
-            return Array.from(new Uint8Array(digest))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-        }
-
-        function validateImageFile(file) {
-            if (!file) return { ok: false, message: 'ไม่พบไฟล์รูปภาพ' };
-            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-                return { ok: false, message: 'รองรับเฉพาะรูป JPG, PNG หรือ WEBP เท่านั้น' };
-            }
-            if (file.size > MAX_IMAGE_FILE_BYTES) {
-                return { ok: false, message: 'รูปภาพต้องมีขนาดไม่เกิน 2 MB' };
-            }
-            return { ok: true };
-        }
-
-        function fileToDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onerror = () => reject(new Error('อ่านไฟล์รูปไม่สำเร็จ'));
-                reader.onload = () => resolve(reader.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function compressImageFile(file, maxDimension = 1280, quality = 0.82) {
-            const validation = validateImageFile(file);
-            if (!validation.ok) throw new Error(validation.message);
-
-            const raw = await fileToDataURL(file);
-            const img = await new Promise((resolve, reject) => {
-                const image = new Image();
-                image.onload = () => resolve(image);
-                image.onerror = () => reject(new Error('ไฟล์รูปภาพเสียหรือไม่รองรับ'));
-                image.src = raw;
-            });
-
-            const scale = Math.min(1, maxDimension / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
-            const width = Math.max(1, Math.round(img.naturalWidth * scale));
-            const height = Math.max(1, Math.round(img.naturalHeight * scale));
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d', { alpha: true });
-            if (!ctx) throw new Error('เบราว์เซอร์ไม่รองรับการประมวลผลรูปภาพ');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            let dataUrl = canvas.toDataURL('image/webp', quality);
-            if (!dataUrl.startsWith('data:image/webp')) {
-                dataUrl = canvas.toDataURL('image/jpeg', quality);
-            }
-            if (dataUrl.length > MAX_IMAGE_DATA_URL_CHARS) {
-                dataUrl = canvas.toDataURL('image/jpeg', 0.68);
-            }
-            if (dataUrl.length > MAX_IMAGE_DATA_URL_CHARS) {
-                throw new Error('รูปยังมีขนาดใหญ่เกินไปหลังบีบอัด กรุณาเลือกรูปที่เล็กลง');
-            }
-            return dataUrl;
+                const url = new URL(src);
+                if (url.protocol === 'https:') return url.href;
+            } catch (_) {}
+            if (!src.includes('..') && /^(?:\.\/)?[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|gif)$/i.test(src)) return src;
+            return fallback;
         }
 
         function getBangkokTimeParts(date = new Date()) {
             const parts = new Intl.DateTimeFormat('en-GB', {
-                timeZone: 'Asia/Bangkok',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hourCycle: 'h23'
+                timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
             }).formatToParts(date);
-
             const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-            return {
-                year: map.year,
-                month: map.month,
-                day: map.day,
-                hour: Number(map.hour),
-                minute: Number(map.minute)
+            return { year: map.year, month: map.month, day: map.day, hour: Number(map.hour), minute: Number(map.minute) };
+        }
+
+        function formatBangkokDate(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return clampText(iso, 40);
+            const p = getBangkokTimeParts(d);
+            return `${p.year}-${p.month}-${p.day} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
+        }
+
+        function makeUuid() {
+            if (window.crypto?.randomUUID) return crypto.randomUUID();
+            const bytes = new Uint8Array(16);
+            crypto.getRandomValues(bytes);
+            bytes[6] = (bytes[6] & 0x0f) | 0x40;
+            bytes[8] = (bytes[8] & 0x3f) | 0x80;
+            const h = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+            return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+        }
+
+        function initLocalLikeIdentity() {
+            try {
+                const stored = localStorage.getItem(LOCAL_STORAGE_USER_LIKES_KEY);
+                userLikedIds = stored ? JSON.parse(stored) : [];
+                if (!Array.isArray(userLikedIds)) userLikedIds = [];
+            } catch (_) { userLikedIds = []; }
+
+            likeClientId = localStorage.getItem(LOCAL_STORAGE_LIKE_CLIENT_KEY);
+            if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(likeClientId || '')) {
+                likeClientId = makeUuid();
+                localStorage.setItem(LOCAL_STORAGE_LIKE_CLIENT_KEY, likeClientId);
+            }
+        }
+
+        function persistLikedIds() {
+            try { localStorage.setItem(LOCAL_STORAGE_USER_LIKES_KEY, JSON.stringify(userLikedIds)); } catch (_) {}
+        }
+
+        function statusFromDb(value) {
+            return ({ available: 'มีสินค้า', bestseller: 'ขายดี', out_of_stock: 'หมด' })[value] || 'มีสินค้า';
+        }
+
+        function statusToDb(value) {
+            return ({ 'มีสินค้า': 'available', 'ขายดี': 'bestseller', 'หมด': 'out_of_stock' })[value] || 'available';
+        }
+
+        function productIcon(category) {
+            const c = String(category || '').toLowerCase();
+            if (c.includes('roblox')) return '🎮';
+            if (c.includes('genshin')) return '🌌';
+            if (c.includes('minecraft')) return '🧱';
+            if (c.includes('ตกแต่ง')) return '✨';
+            return '🎁';
+        }
+
+        function validateImageFile(file) {
+            if (!file) return { ok: false, message: 'ไม่พบไฟล์รูปภาพ' };
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return { ok: false, message: 'รองรับเฉพาะ JPG, PNG หรือ WEBP เท่านั้น' };
+            if (file.size > MAX_IMAGE_FILE_BYTES) return { ok: false, message: 'รูปภาพต้องมีขนาดไม่เกิน 2 MB' };
+            return { ok: true };
+        }
+
+        function extFromMime(mime) {
+            return ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' })[mime] || 'jpg';
+        }
+
+        async function uploadPublicImage(file, folder, prefix = 'image') {
+            const validation = validateImageFile(file);
+            if (!validation.ok) throw new Error(validation.message);
+            if (!sb) throw new Error('ยังไม่ได้เชื่อม Supabase');
+            const path = `${folder}/${prefix}-${makeUuid()}.${extFromMime(file.type)}`;
+            const { error } = await sb.storage.from(SUPABASE_STORAGE_BUCKET).upload(path, file, {
+                cacheControl: '3600', upsert: false, contentType: file.type
+            });
+            if (error) throw error;
+            const { data } = sb.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        function storagePathFromPublicUrl(url) {
+            try {
+                const parsed = new URL(url);
+                const needle = `/storage/v1/object/public/${SUPABASE_STORAGE_BUCKET}/`;
+                const idx = parsed.pathname.indexOf(needle);
+                if (idx < 0) return null;
+                return decodeURIComponent(parsed.pathname.slice(idx + needle.length));
+            } catch (_) { return null; }
+        }
+
+        async function removeStorageUrl(url) {
+            if (!sb || !url) return;
+            const path = storagePathFromPublicUrl(url);
+            if (!path) return;
+            const { error } = await sb.storage.from(SUPABASE_STORAGE_BUCKET).remove([path]);
+            if (error) console.warn('Storage cleanup:', error.message);
+        }
+
+        async function requireSupabase() {
+            if (sb) return true;
+            showToast('ยังไม่ได้ใส่ SUPABASE_URL และ Publishable/anon key ในไฟล์', 'error');
+            return false;
+        }
+
+        async function requireAdmin() {
+            if (!(await requireSupabase())) return false;
+            const { data: userData, error: userError } = await sb.auth.getUser();
+            if (userError || !userData?.user) {
+                isAdminLoggedIn = false;
+                updateAdminUI();
+                showToast('กรุณาเข้าสู่ระบบแอดมินใหม่', 'error');
+                return false;
+            }
+            const { data, error } = await sb.rpc('is_admin');
+            isAdminLoggedIn = !error && data === true;
+            updateAdminUI();
+            if (!isAdminLoggedIn) showToast('บัญชีนี้ไม่มีสิทธิ์แอดมิน', 'error');
+            return isAdminLoggedIn;
+        }
+
+        async function refreshAdminSession() {
+            if (!sb) {
+                isAdminLoggedIn = false;
+                updateAdminUI();
+                return;
+            }
+            const { data: userData } = await sb.auth.getUser();
+            if (!userData?.user) {
+                isAdminLoggedIn = false;
+                updateAdminUI();
+                return;
+            }
+            const { data, error } = await sb.rpc('is_admin');
+            isAdminLoggedIn = !error && data === true;
+            updateAdminUI();
+        }
+
+        async function loadStoreConfig() {
+            if (!sb) return;
+            const { data, error } = await sb.from('store_config').select('*').order('created_at', { ascending: true }).limit(1);
+            if (error) throw error;
+            const row = data?.[0];
+            if (!row) {
+                storeConfig = { ...defaultStoreConfig };
+                storeConfigId = null;
+                return;
+            }
+            storeConfigId = row.id;
+            storeConfig = {
+                logo: row.logo_url || defaultStoreConfig.logo,
+                lineId: row.line_id || defaultStoreConfig.lineId,
+                lineLink: row.line_url || defaultStoreConfig.lineLink,
+                fbLink: row.facebook_url || defaultStoreConfig.fbLink,
+                statusMode: ['auto', 'open', 'closed'].includes(row.status_mode) ? row.status_mode : (row.is_open === false ? 'closed' : 'auto')
             };
         }
 
-        function createSafeId(prefix) {
-            if (window.crypto?.randomUUID) {
-                return `${prefix}-${crypto.randomUUID().replace(/-/g, '')}`;
-            }
-            return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        async function loadProducts() {
+            if (!sb) return;
+            const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            products = (data || []).map(p => ({
+                id: String(p.id),
+                title: clampText(p.title, MAX_PRODUCT_TITLE),
+                category: clampText(p.category, 80),
+                price: Number(p.price || 0),
+                desc: clampText(p.description, MAX_PRODUCT_DESC),
+                status: statusFromDb(p.status),
+                icon: productIcon(p.category),
+                image: p.image_url || null
+            }));
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            initStorageData();
+        async function loadReviews() {
+            if (!sb) return;
+            const { data, error } = await sb.from('reviews').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            reviews = (data || []).map(r => {
+                const prod = products.find(p => p.id === String(r.product_id || ''));
+                return {
+                    id: String(r.id),
+                    type: r.review_type === 'service' ? 'service' : 'product',
+                    productId: r.product_id ? String(r.product_id) : null,
+                    productTitle: r.product_title || prod?.title || null,
+                    userName: clampText(r.author_name, MAX_REVIEW_NAME) || 'ลูกค้า',
+                    rating: Math.max(1, Math.min(5, Number(r.rating || 5))),
+                    tags: Array.isArray(r.tags) ? r.tags.slice(0, 8).map(t => clampText(t, 60)) : [],
+                    comment: clampText(r.comment, MAX_REVIEW_COMMENT),
+                    photo: r.image_url || null,
+                    date: formatBangkokDate(r.created_at),
+                    likes: Math.max(0, Number(r.likes_count || 0)),
+                    adminHeart: Boolean(r.is_liked_by_admin),
+                    adminReply: r.admin_reply ? clampText(r.admin_reply, MAX_ADMIN_REPLY) : null
+                };
+            });
+        }
+
+        async function reloadAllData({ quiet = false } = {}) {
+            if (!sb) return;
+            try {
+                await loadStoreConfig();
+                await loadProducts();
+                await loadReviews();
+                applyStoreConfigToUI();
+                checkStoreOpeningStatus();
+                renderProducts();
+                renderReviews();
+                updateStatsAndBadges();
+            } catch (err) {
+                console.error(err);
+                if (!quiet) showToast(`โหลดข้อมูลไม่สำเร็จ: ${err.message || 'ตรวจสอบ SQL/RLS'}`, 'error');
+            }
+        }
+
+        function setupRealtime() {
+            if (!sb || realtimeChannel) return;
+            realtimeChannel = sb.channel('buttercake-live-v1')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+                    await loadProducts(); await loadReviews(); renderProducts(); renderReviews(); updateStatsAndBadges();
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async () => {
+                    await loadReviews(); renderReviews(); updateStatsAndBadges();
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'store_config' }, async () => {
+                    await loadStoreConfig(); applyStoreConfigToUI(); checkStoreOpeningStatus(); renderProducts();
+                })
+                .subscribe();
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
             initChocolateParticles();
+            initLocalLikeIdentity();
+            setRating(5);
             applyStoreConfigToUI();
             checkStoreOpeningStatus();
             setInterval(checkStoreOpeningStatus, 60000);
 
-            isAdminLoggedIn = sessionStorage.getItem(SESSION_STORAGE_ADMIN_KEY) === '1';
-            updateAdminUI();
+            if (!initSupabaseClient()) {
+                products = [...DEFAULT_PRODUCTS];
+                reviews = [...DEFAULT_REVIEWS];
+                renderProducts();
+                renderReviews();
+                updateStatsAndBadges();
+                updateAdminUI();
+                setTimeout(() => showToast('โหมดตัวอย่าง: ใส่ Supabase URL และ Publishable/anon key ในส่วน CONFIG เพื่อเชื่อมฐานข้อมูล', 'info'), 500);
+                return;
+            }
 
-            setRating(5);
-
-            renderProducts();
-            renderReviews();
-            updateStatsAndBadges();
+            try {
+                await reloadAllData();
+                await refreshAdminSession();
+                setupRealtime();
+                sb.auth.onAuthStateChange(async () => {
+                    setTimeout(async () => { await refreshAdminSession(); renderProducts(); renderReviews(); }, 0);
+                });
+            } catch (err) {
+                console.error(err);
+                products = [...DEFAULT_PRODUCTS];
+                reviews = [...DEFAULT_REVIEWS];
+                renderProducts(); renderReviews(); updateStatsAndBadges();
+                showToast(`เชื่อม Supabase ไม่สำเร็จ: ${err.message || 'ตรวจสอบค่า CONFIG และ SQL'}`, 'error');
+            }
         });
 
+        function applyStoreConfigToUI() {
+            const logoImg = document.getElementById('headerLogoImg');
+            const lineText = document.getElementById('headerLineText');
+            const lineLink = document.getElementById('headerLineLink');
+            const fbLink = document.getElementById('headerFbLink');
+            const footerLineLink = document.getElementById('footerLineLink');
+            const footerLineIdText = document.getElementById('footerLineIdText');
+            const footerFbLink = document.getElementById('footerFbLink');
+            const safeLogo = safeImageSrc(storeConfig.logo, defaultStoreConfig.logo);
+            const safeLineLink = sanitizeExternalUrl(storeConfig.lineLink, defaultStoreConfig.lineLink);
+            const safeFbLink = sanitizeExternalUrl(storeConfig.fbLink, defaultStoreConfig.fbLink);
+            const safeLineId = clampText(storeConfig.lineId || defaultStoreConfig.lineId, 80);
 
-function initStorageData() {
-    const storedConfig = localStorage.getItem(LOCAL_STORAGE_STORE_CONFIG_KEY);
-    if (storedConfig) {
-        try { storeConfig = JSON.parse(storedConfig); }
-        catch(e) { storeConfig = { ...defaultStoreConfig }; }
-    } else {
-        storeConfig = { ...defaultStoreConfig };
-        saveJSON(LOCAL_STORAGE_STORE_CONFIG_KEY, storeConfig);
-    }
-
-    const storedProducts = localStorage.getItem(LOCAL_STORAGE_PRODUCTS_KEY);
-    if (storedProducts) {
-        try { products = JSON.parse(storedProducts); }
-        catch(e) { products = [...DEFAULT_PRODUCTS]; }
-    } else {
-        products = [...DEFAULT_PRODUCTS];
-        saveJSON(LOCAL_STORAGE_PRODUCTS_KEY, products);
-    }
-
-    const storedReviews = localStorage.getItem(LOCAL_STORAGE_REVIEWS_KEY);
-    if (storedReviews) {
-        try { reviews = JSON.parse(storedReviews); }
-        catch(e) { reviews = [...DEFAULT_REVIEWS]; }
-    } else {
-        reviews = [...DEFAULT_REVIEWS];
-        saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews);
-    }
-
-    const storedLikes = localStorage.getItem(LOCAL_STORAGE_USER_LIKES_KEY);
-    if (storedLikes) {
-        try { userLikedIds = JSON.parse(storedLikes); }
-        catch(e) { userLikedIds = []; }
-    } else {
-        userLikedIds = [];
-    }
-
-    normalizePersistentData();
-}
-
-
-function applyStoreConfigToUI() {
-    const logoImg = document.getElementById('headerLogoImg');
-    const lineText = document.getElementById('headerLineText');
-    const lineLink = document.getElementById('headerLineLink');
-    const fbLink = document.getElementById('headerFbLink');
-    const footerLineLink = document.getElementById('footerLineLink');
-    const footerLineIdText = document.getElementById('footerLineIdText');
-    const footerFbLink = document.getElementById('footerFbLink');
-
-    const safeLogo = safeImageSrc(storeConfig.logo, defaultStoreConfig.logo);
-    const safeLineLink = sanitizeExternalUrl(storeConfig.lineLink, defaultStoreConfig.lineLink);
-    const safeFbLink = sanitizeExternalUrl(storeConfig.fbLink, defaultStoreConfig.fbLink);
-    const safeLineId = clampText(storeConfig.lineId || defaultStoreConfig.lineId, 80);
-
-    if (logoImg) {
-        logoImg.src = safeLogo;
-        logoImg.onerror = () => {
-            logoImg.style.display = 'none';
-            logoImg.parentElement?.classList.add('after:content-["🍰"]');
-        };
-    }
-    if (lineText) lineText.innerText = `แอดไลน์ ${safeLineId}`;
-    if (lineLink) lineLink.href = safeLineLink;
-    if (fbLink) fbLink.href = safeFbLink;
-    if (footerLineLink) {
-        footerLineLink.href = safeLineLink;
-        footerLineLink.rel = 'noopener noreferrer';
-    }
-    if (footerLineIdText) footerLineIdText.innerText = `LINE: ${safeLineId}`;
-    if (footerFbLink) {
-        footerFbLink.href = safeFbLink;
-        footerFbLink.rel = 'noopener noreferrer';
-    }
-}
+            if (logoImg) {
+                logoImg.style.display = '';
+                logoImg.src = safeLogo;
+                logoImg.onerror = () => { logoImg.style.display = 'none'; };
+            }
+            if (lineText) lineText.innerText = `แอดไลน์ ${safeLineId}`;
+            if (lineLink) lineLink.href = safeLineLink;
+            if (fbLink) fbLink.href = safeFbLink;
+            if (footerLineLink) { footerLineLink.href = safeLineLink; footerLineLink.rel = 'noopener noreferrer'; }
+            if (footerLineIdText) footerLineIdText.innerText = `LINE: ${safeLineId}`;
+            if (footerFbLink) { footerFbLink.href = safeFbLink; footerFbLink.rel = 'noopener noreferrer'; }
+        }
 
         function initChocolateParticles() {
             const container = document.getElementById('chocolateParticles');
             if (!container) return;
             container.innerHTML = '';
-
             const chocoEmojis = ['🍫', '🤎', '🍫', '🍫', '🤎'];
-            const particleCount = 20;
-
-            for (let i = 0; i < particleCount; i++) {
+            for (let i = 0; i < 20; i++) {
                 const el = document.createElement('div');
                 el.className = 'choco-particle';
                 el.innerText = chocoEmojis[Math.floor(Math.random() * chocoEmojis.length)];
-                
-                const size = Math.floor(Math.random() * 16) + 18;
-                const left = Math.random() * 95;
-                const duration = Math.random() * 12 + 10;
-                const delay = Math.random() * 10;
-
-                el.style.fontSize = `${size}px`;
-                el.style.left = `${left}%`;
-                el.style.animationDuration = `${duration}s`;
-                el.style.animationDelay = `${delay}s`;
-
+                el.style.fontSize = `${Math.floor(Math.random() * 16) + 18}px`;
+                el.style.left = `${Math.random() * 95}%`;
+                el.style.animationDuration = `${Math.random() * 12 + 10}s`;
+                el.style.animationDelay = `${Math.random() * 10}s`;
                 container.appendChild(el);
             }
         }
 
-
-function checkStoreOpeningStatus() {
-    const badge = document.getElementById('storeStatusBadge');
-    if (!badge) return;
-
-    let isOpen = false;
-    const mode = storeConfig.statusMode || 'auto';
-
-    if (mode === 'open') {
-        isOpen = true;
-    } else if (mode === 'closed') {
-        isOpen = false;
-    } else {
-        const bkk = getBangkokTimeParts();
-        const currentMin = bkk.hour * 60 + bkk.minute;
-        isOpen = (currentMin >= 690) || (currentMin < 90);
-    }
-
-    if (isOpen) {
-        badge.className = "mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm";
-        badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span> 🟢 ร้านเปิดอยู่ (11.30 - 01.30 น.)`;
-    } else {
-        badge.className = "mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shadow-sm";
-        badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 🔴 ร้านปิดบริการชั่วคราว (เปิด 11.30 - 01.30 น.)`;
-    }
-}
-
-
-async function copyLineID() {
-    const lineId = clampText(storeConfig.lineId || '@755jvmsc', 80);
-    try {
-        if (navigator.clipboard?.writeText) {
-            await navigator.clipboard.writeText(lineId);
-        } else {
-            const tempInput = document.createElement('input');
-            tempInput.value = lineId;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            tempInput.remove();
-        }
-        showToast(`📋 คัดลอก LINE ID ${lineId} แล้ว!`, 'success');
-    } catch (err) {
-        showToast(`LINE ID: ${lineId}`, 'info');
-    }
-}
-
-        function switchMainTab(tab) {
-            currentMainTab = tab;
-
-            const tabBtnProducts = document.getElementById('tabBtnProducts');
-            const tabBtnProductReviews = document.getElementById('tabBtnProductReviews');
-            const tabBtnServiceReviews = document.getElementById('tabBtnServiceReviews');
-
-            const sectionProducts = document.getElementById('sectionProducts');
-            const sectionReviews = document.getElementById('sectionReviews');
-
-            const currentTabTitle = document.getElementById('currentTabTitle');
-            const currentTabDesc = document.getElementById('currentTabDesc');
-            const filterProductSelect = document.getElementById('filterProductSelect');
-
-            [tabBtnProducts, tabBtnProductReviews, tabBtnServiceReviews].forEach(btn => btn?.classList.remove('active'));
-
-            if (tab === 'products') {
-                tabBtnProducts.classList.add('active');
-                sectionProducts.classList.remove('hidden');
-                sectionReviews.classList.add('hidden');
-            } else if (tab === 'product-reviews') {
-                tabBtnProductReviews.classList.add('active');
-                sectionProducts.classList.add('hidden');
-                sectionReviews.classList.remove('hidden');
-
-                currentTabTitle.innerHTML = `<span>🍰</span> รีวิวสินค้า (Product Reviews)`;
-                currentTabDesc.innerText = `ความคิดเห็นจากลูกค้าเกี่ยวกับคุณภาพไอดีเกมและของตกแต่งน่ารัก`;
-                filterProductSelect.classList.remove('hidden');
-
-                renderReviews();
-            } else if (tab === 'service-reviews') {
-                tabBtnServiceReviews.classList.add('active');
-                sectionProducts.classList.add('hidden');
-                sectionReviews.classList.remove('hidden');
-
-                currentTabTitle.innerHTML = `<span>💬</span> รีวิวการบริการ (Service Reviews)`;
-                currentTabDesc.innerText = `รีวิวจากลูกค้าเกี่ยวกับความรวดเร็ว แอดมินตอบแชท และความประทับใจบริการ`;
-                filterProductSelect.classList.add('hidden');
-
-                renderReviews();
+        function checkStoreOpeningStatus() {
+            const badge = document.getElementById('storeStatusBadge');
+            if (!badge) return;
+            let isOpen = false;
+            const mode = storeConfig.statusMode || 'auto';
+            if (mode === 'open') isOpen = true;
+            else if (mode === 'closed') isOpen = false;
+            else {
+                const bkk = getBangkokTimeParts();
+                const currentMin = bkk.hour * 60 + bkk.minute;
+                isOpen = currentMin >= 690 || currentMin < 90;
+            }
+            if (isOpen) {
+                badge.className = 'mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm';
+                badge.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span> 🟢 ร้านเปิดอยู่ (11.30 - 01.30 น.)';
+            } else {
+                badge.className = 'mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shadow-sm';
+                badge.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 🔴 ร้านปิดบริการชั่วคราว (เปิด 11.30 - 01.30 น.)';
             }
         }
 
+        async function copyLineID() {
+            const lineId = clampText(storeConfig.lineId || defaultStoreConfig.lineId, 80);
+            try { await navigator.clipboard.writeText(lineId); showToast(`📋 คัดลอก LINE ID ${lineId} แล้ว!`, 'success'); }
+            catch (_) { showToast(`LINE ID: ${lineId}`, 'info'); }
+        }
 
-function renderProducts() {
-    const grid = document.getElementById('productsGrid');
-    const selectInForm = document.getElementById('formProductSelect');
-    const selectInFilter = document.getElementById('filterProductSelect');
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const tabBtnProducts = document.getElementById('tabBtnProducts');
+            const tabBtnProductReviews = document.getElementById('tabBtnProductReviews');
+            const tabBtnServiceReviews = document.getElementById('tabBtnServiceReviews');
+            const sectionProducts = document.getElementById('sectionProducts');
+            const sectionReviews = document.getElementById('sectionReviews');
+            const currentTabTitle = document.getElementById('currentTabTitle');
+            const currentTabDesc = document.getElementById('currentTabDesc');
+            const filterProductSelect = document.getElementById('filterProductSelect');
+            [tabBtnProducts, tabBtnProductReviews, tabBtnServiceReviews].forEach(btn => btn?.classList.remove('active'));
 
-    if (!grid) return;
+            if (tab === 'products') {
+                tabBtnProducts?.classList.add('active'); sectionProducts?.classList.remove('hidden'); sectionReviews?.classList.add('hidden');
+            } else if (tab === 'product-reviews') {
+                tabBtnProductReviews?.classList.add('active'); sectionProducts?.classList.add('hidden'); sectionReviews?.classList.remove('hidden');
+                if (currentTabTitle) currentTabTitle.innerHTML = '<span>🍰</span> รีวิวสินค้า (Product Reviews)';
+                if (currentTabDesc) currentTabDesc.innerText = 'ความคิดเห็นจากลูกค้าเกี่ยวกับคุณภาพไอดีเกมและของตกแต่งน่ารัก';
+                filterProductSelect?.classList.remove('hidden'); renderReviews();
+            } else {
+                tabBtnServiceReviews?.classList.add('active'); sectionProducts?.classList.add('hidden'); sectionReviews?.classList.remove('hidden');
+                if (currentTabTitle) currentTabTitle.innerHTML = '<span>💬</span> รีวิวการบริการ (Service Reviews)';
+                if (currentTabDesc) currentTabDesc.innerText = 'รีวิวจากลูกค้าเกี่ยวกับความรวดเร็ว แอดมินตอบแชท และความประทับใจบริการ';
+                filterProductSelect?.classList.add('hidden'); renderReviews();
+            }
+        }
 
-    const statusStyle = {
-        'มีสินค้า': { color: 'bg-emerald-100 text-emerald-700 border-emerald-300', icon: '🟢' },
-        'ขายดี': { color: 'bg-amber-100 text-amber-700 border-amber-300', icon: '🔥' },
-        'หมด': { color: 'bg-rose-100 text-rose-700 border-rose-300', icon: '🔴' }
-    };
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const selectInForm = document.getElementById('formProductSelect');
+            const selectInFilter = document.getElementById('filterProductSelect');
+            if (!grid) return;
+            const statusStyle = {
+                'มีสินค้า': { color: 'bg-emerald-100 text-emerald-700 border-emerald-300', icon: '🟢' },
+                'ขายดี': { color: 'bg-amber-100 text-amber-700 border-amber-300', icon: '🔥' },
+                'หมด': { color: 'bg-rose-100 text-rose-700 border-rose-300', icon: '🔴' }
+            };
 
-    grid.innerHTML = products.map((prod, index) => {
-        const safeId = safeEntityId(prod.id, `prod-safe-${index}`);
-        const statusText = ['มีสินค้า', 'ขายดี', 'หมด'].includes(prod.status) ? prod.status : 'มีสินค้า';
-        const s = statusStyle[statusText];
-        const safeTitle = escapeHTML(clampText(prod.title, MAX_PRODUCT_TITLE));
-        const safeCategory = escapeHTML(clampText(prod.category, 80));
-        const safeDesc = escapeHTML(clampText(prod.desc, MAX_PRODUCT_DESC));
-        const safeIcon = escapeHTML(clampText(prod.icon, 8) || '🍫');
-        const price = Number.isFinite(Number(prod.price)) ? Number(prod.price) : 0;
-        const safeImage = safeImageSrc(prod.image, '');
-        const safeOrderLink = sanitizeExternalUrl(storeConfig.lineLink, defaultStoreConfig.lineLink);
+            grid.innerHTML = products.map((prod, index) => {
+                const safeId = safeEntityId(prod.id, `prod-${index}`);
+                const statusText = ['มีสินค้า', 'ขายดี', 'หมด'].includes(prod.status) ? prod.status : 'มีสินค้า';
+                const s = statusStyle[statusText];
+                const safeTitle = escapeHTML(clampText(prod.title, MAX_PRODUCT_TITLE));
+                const safeCategory = escapeHTML(clampText(prod.category, 80));
+                const safeDesc = escapeHTML(clampText(prod.desc, MAX_PRODUCT_DESC));
+                const safeIcon = escapeHTML(clampText(prod.icon, 8) || '🎁');
+                const price = Number.isFinite(Number(prod.price)) ? Number(prod.price) : 0;
+                const safeImage = safeImageSrc(prod.image, '');
+                const orderLink = sanitizeExternalUrl(storeConfig.lineLink, defaultStoreConfig.lineLink);
+                const imageHtml = safeImage ? `<div class="w-full h-40 rounded-xl overflow-hidden mb-3 border border-mint/40 bg-white"><img src="${escapeHTML(safeImage)}" alt="${safeTitle}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"></div>` : '';
+                return `<div class="glass-card rounded-2xl p-5 shadow-md border border-mint/40 hover:border-mint transition-all flex flex-col justify-between group relative">
+                    ${isAdminLoggedIn ? `<button onclick="deleteProduct('${safeId}')" class="absolute -top-3 -right-3 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-md hover:bg-rose-600 transition-all z-10 border-2 border-white" title="ลบสินค้า"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    <div>${imageHtml}<div class="flex items-center justify-between gap-2 mb-2"><span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-mint/30 text-darkchoco">${safeCategory}</span>
+                    <span onclick="${isAdminLoggedIn ? `editProductStatus('${safeId}')` : ''}" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${s.color} ${isAdminLoggedIn ? 'cursor-pointer hover:opacity-80 shadow-sm' : ''}" title="${isAdminLoggedIn ? 'คลิกเพื่อเปลี่ยนสถานะสินค้า' : ''}">${s.icon} ${escapeHTML(statusText)} ${isAdminLoggedIn ? '<i class="fa-solid fa-pen text-[9px] ml-1"></i>' : ''}</span></div>
+                    <h3 class="text-base font-bold font-kanit text-darkchoco group-hover:text-mintdark transition-colors flex items-center gap-1.5">${!safeImage ? `<span>${safeIcon}</span>` : ''}<span>${safeTitle}</span></h3>
+                    <p class="text-xs text-darkchocolight mt-2 leading-relaxed">${safeDesc}</p></div>
+                    <div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between"><div><span class="text-xs text-darkchocolight">ราคาเพียง</span><div class="text-xl font-bold font-kanit text-darkchoco">฿${price.toLocaleString('th-TH')}</div></div>
+                    <div class="flex items-center gap-1.5"><button onclick="filterReviewsByProduct('${safeId}')" class="px-3 py-1.5 rounded-xl bg-mint/20 text-darkchoco text-xs font-semibold hover:bg-mint/40 transition-all"><i class="fa-regular fa-star mr-1"></i> ดูรีวิว</button>
+                    <a href="${escapeHTML(orderLink)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold transition-all ${statusText === 'หมด' ? 'bg-gray-400 pointer-events-none' : 'bg-darkchoco hover:bg-darkchocolight'}">${statusText === 'หมด' ? 'หมดชั่วคราว' : 'สั่งซื้อ'}</a></div></div>
+                </div>`;
+            }).join('');
 
-        const imageDisplayHtml = safeImage ?
-            `<div class="w-full h-40 rounded-xl overflow-hidden mb-3 border border-mint/40 bg-white">
-                <img src="${escapeHTML(safeImage)}" alt="${safeTitle}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300">
-            </div>` : '';
+            const optionsHtml = products.map((p, index) => `<option value="${safeEntityId(p.id, `prod-${index}`)}">${escapeHTML(p.icon || '📦')} ${escapeHTML(p.title)} (฿${Number(p.price || 0).toLocaleString('th-TH')})</option>`).join('');
+            if (selectInForm) selectInForm.innerHTML = optionsHtml || '<option value="">ยังไม่มีสินค้า</option>';
+            if (selectInFilter) selectInFilter.innerHTML = '<option value="ALL">📦 ทุกสินค้าในร้าน</option>' + optionsHtml;
+        }
 
-        return `
-        <div class="glass-card rounded-2xl p-5 shadow-md border border-mint/40 hover:border-mint transition-all flex flex-col justify-between group relative">
+        async function editProductStatus(productId) {
+            if (!(await requireAdmin())) return;
+            const prod = products.find(p => p.id === productId); if (!prod) return;
+            const choice = prompt(`แก้ไขสถานะสินค้า: "${prod.title}"\n1 = 🟢 มีสินค้า\n2 = 🔥 ขายดี\n3 = 🔴 หมด`, '1');
+            const map = { '1': 'มีสินค้า', '2': 'ขายดี', '3': 'หมด' };
+            if (choice === null) return;
+            if (!map[choice]) { showToast('กรุณาเลือก 1, 2 หรือ 3 เท่านั้น', 'error'); return; }
+            const { error } = await sb.from('products').update({ status: statusToDb(map[choice]) }).eq('id', productId);
+            if (error) return showToast(`อัปเดตสถานะไม่สำเร็จ: ${error.message}`, 'error');
+            prod.status = map[choice]; renderProducts(); showToast('✏️ อัปเดตสถานะสินค้าเรียบร้อยแล้ว!', 'success');
+        }
 
-            ${isAdminLoggedIn ? `
-                <button onclick="deleteProduct('${safeId}')" class="absolute -top-3 -right-3 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-md hover:bg-rose-600 transition-all z-10 border-2 border-white" title="ลบสินค้า">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            ` : ''}
-
-            <div>
-                ${imageDisplayHtml}
-                <div class="flex items-center justify-between gap-2 mb-2">
-                    <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-mint/30 text-darkchoco">
-                        ${safeCategory}
-                    </span>
-                    <span onclick="${isAdminLoggedIn ? `editProductStatus('${safeId}')` : ''}" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${s.color} ${isAdminLoggedIn ? 'cursor-pointer hover:opacity-80 shadow-sm' : ''}" title="${isAdminLoggedIn ? 'คลิกเพื่อเปลี่ยนสถานะสินค้า' : ''}">
-                        ${s.icon} ${escapeHTML(statusText)} ${isAdminLoggedIn ? '<i class="fa-solid fa-pen text-[9px] ml-1"></i>' : ''}
-                    </span>
-                </div>
-                <h3 class="text-base font-bold font-kanit text-darkchoco group-hover:text-mintdark transition-colors flex items-center gap-1.5">
-                    ${!safeImage ? `<span>${safeIcon}</span>` : ''}
-                    <span>${safeTitle}</span>
-                </h3>
-                <p class="text-xs text-darkchocolight mt-2 leading-relaxed">
-                    ${safeDesc}
-                </p>
-            </div>
-
-            <div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-darkchocolight">ราคาเพียง</span>
-                    <div class="text-xl font-bold font-kanit text-darkchoco">฿${price.toLocaleString('th-TH')}</div>
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <button onclick="filterReviewsByProduct('${safeId}')" class="px-3 py-1.5 rounded-xl bg-mint/20 text-darkchoco text-xs font-semibold hover:bg-mint/40 transition-all">
-                        <i class="fa-regular fa-star mr-1"></i> ดูรีวิว
-                    </button>
-                    <a href="${escapeHTML(safeOrderLink)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold transition-all ${statusText === 'หมด' ? 'bg-gray-400 pointer-events-none' : 'bg-darkchoco hover:bg-darkchocolight'}">
-                        ${statusText === 'หมด' ? 'หมดชั่วคราว' : 'สั่งซื้อ'}
-                    </a>
-                </div>
-            </div>
-        </div>
-    `}).join('');
-
-    const optionsHtml = products.map((p, index) => {
-        const safeId = safeEntityId(p.id, `prod-safe-${index}`);
-        const safeIcon = escapeHTML(clampText(p.icon, 8) || '📦');
-        const safeTitle = escapeHTML(clampText(p.title, MAX_PRODUCT_TITLE));
-        const price = Number.isFinite(Number(p.price)) ? Number(p.price) : 0;
-        return `<option value="${safeId}">${safeIcon} ${safeTitle} (฿${price.toLocaleString('th-TH')})</option>`;
-    }).join('');
-
-    if (selectInForm) selectInForm.innerHTML = optionsHtml;
-    if (selectInFilter) selectInFilter.innerHTML = `<option value="ALL">📦 ทุกสินค้าในร้าน</option>` + optionsHtml;
-}
-
-
-function editProductStatus(productId) {
-    if (!requireAdmin()) return;
-    const safeId = safeEntityId(productId);
-    const prod = products.find(p => p.id === safeId);
-    if (!prod) return;
-
-    const choice = prompt(`แก้ไขสถานะสินค้า: "${prod.title}"\nกรอกตัวเลขเลือกสถานะใหม่:\n1 = 🟢 มีสินค้า\n2 = 🔥 ขายดี\n3 = 🔴 หมด`, "1");
-
-    if (choice === "1") {
-        prod.status = "มีสินค้า";
-    } else if (choice === "2") {
-        prod.status = "ขายดี";
-    } else if (choice === "3") {
-        prod.status = "หมด";
-    } else if (choice !== null) {
-        showToast("กรุณาเลือก 1, 2 หรือ 3 เท่านั้น", "error");
-        return;
-    } else {
-        return;
-    }
-
-    if (!saveJSON(LOCAL_STORAGE_PRODUCTS_KEY, products)) return;
-    renderProducts();
-    showToast("✏️ อัปเดตสถานะสินค้าเรียบร้อยแล้ว!", "success");
-}
-
-
-function deleteProduct(productId) {
-    if (!requireAdmin()) return;
-    const safeId = safeEntityId(productId);
-    if (!safeId) return;
-
-    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?')) {
-        products = products.filter(p => p.id !== safeId);
-        if (!saveJSON(LOCAL_STORAGE_PRODUCTS_KEY, products)) return;
-        renderProducts();
-        showToast('🗑️ ลบสินค้าเรียบร้อยแล้ว', 'info');
-    }
-}
+        async function deleteProduct(productId) {
+            if (!(await requireAdmin())) return;
+            const prod = products.find(p => p.id === productId); if (!prod) return;
+            if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?')) return;
+            const { error } = await sb.from('products').delete().eq('id', productId);
+            if (error) return showToast(`ลบสินค้าไม่สำเร็จ: ${error.message}`, 'error');
+            await removeStorageUrl(prod.image);
+            products = products.filter(p => p.id !== productId); renderProducts(); showToast('🗑️ ลบสินค้าเรียบร้อยแล้ว', 'info');
+        }
 
         function filterReviewsByProduct(productId) {
             switchMainTab('product-reviews');
             const selectFilter = document.getElementById('filterProductSelect');
-            if (selectFilter) {
-                selectFilter.value = productId;
-                renderReviews();
-            }
+            if (selectFilter) { selectFilter.value = productId; renderReviews(); }
         }
 
+        function renderReviews() {
+            const grid = document.getElementById('reviewsGrid');
+            const emptyView = document.getElementById('emptyReviewsView');
+            if (!grid) return;
+            const starFilter = document.getElementById('filterStarSelect')?.value || 'ALL';
+            const productFilter = document.getElementById('filterProductSelect')?.value || 'ALL';
+            const searchText = (document.getElementById('filterSearchInput')?.value || '').toLowerCase().trim();
+            const targetType = currentMainTab === 'product-reviews' ? 'product' : 'service';
+            let filtered = reviews.filter(r => r.type === targetType);
+            if (targetType === 'product' && productFilter !== 'ALL') filtered = filtered.filter(r => r.productId === productFilter);
+            if (starFilter !== 'ALL') filtered = filtered.filter(r => r.rating >= Number(starFilter));
+            if (searchText) filtered = filtered.filter(r => `${r.userName} ${r.comment} ${r.productTitle || ''} ${(r.tags || []).join(' ')}`.toLowerCase().includes(searchText));
+            if (!filtered.length) { grid.innerHTML = ''; emptyView?.classList.remove('hidden'); return; }
+            emptyView?.classList.add('hidden');
 
-function renderReviews() {
-    const grid = document.getElementById('reviewsGrid');
-    const emptyView = document.getElementById('emptyReviewsView');
-    if (!grid) return;
+            grid.innerHTML = filtered.map((rev, index) => {
+                const safeId = safeEntityId(rev.id, `rev-${index}`);
+                const safeName = clampText(rev.userName, MAX_REVIEW_NAME) || 'ลูกค้า';
+                const rating = Math.max(1, Math.min(5, Number(rev.rating || 5)));
+                const isLiked = userLikedIds.includes(safeId);
+                const stars = Array.from({ length: 5 }, (_, i) => `<i class="fa-solid fa-star ${i < rating ? 'text-amber-400' : 'text-gray-300'} text-sm"></i>`).join('');
+                const tags = (rev.tags || []).slice(0,8).map(t => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mint/20 text-darkchoco border border-mint/40">#${escapeHTML(t)}</span>`).join('');
+                const photo = safeImageSrc(rev.photo, '');
+                const photoHtml = photo ? `<div class="mt-3"><img src="${escapeHTML(photo)}" alt="Review evidence" class="max-h-48 rounded-xl border border-mint/40 object-cover shadow-sm"></div>` : '';
+                const adminHeart = rev.adminHeart ? `<div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-300 shadow-sm animate-pulse"><i class="fa-solid fa-heart text-rose-500"></i><span>💖 เจ้าของร้านถูกใจสิ่งนี้</span></div>` : '';
+                const adminReply = rev.adminReply ? `<div class="mt-3 p-3 rounded-2xl bg-warmcream/90 border border-mint/40 text-xs relative"><div class="flex items-center gap-1.5 font-bold text-darkchoco mb-1"><span>🧁 เจ้าของร้าน Butter Cake ตอบกลับ:</span></div><p class="text-darkchocolight whitespace-pre-line">${escapeHTML(rev.adminReply)}</p></div>` : '';
+                const controls = isAdminLoggedIn ? `<div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-mint/20 bg-mint/10 -mx-5 -mb-5 p-3 rounded-b-2xl"><div class="flex items-center gap-2"><button onclick="toggleAdminHeart('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg ${rev.adminHeart ? 'bg-rose-500 text-white' : 'bg-rose-100 text-rose-700'} font-bold hover:opacity-90 transition-all"><i class="fa-solid fa-heart mr-1"></i> ${rev.adminHeart ? 'ถอนหัวใจเจ้าของร้าน' : 'กดใจในนามเจ้าของร้าน'}</button><button onclick="openAdminReplyModal('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg bg-darkchoco text-white font-bold hover:bg-darkchocolight transition-all"><i class="fa-solid fa-reply mr-1"></i> ตอบกลับ</button></div><button onclick="deleteReview('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold hover:bg-rose-200"><i class="fa-solid fa-trash mr-1"></i> ลบ</button></div>` : '';
+                return `<div class="glass-card rounded-2xl p-5 shadow-md border border-mint/30 flex flex-col justify-between hover:shadow-lg transition-all"><div><div class="flex items-start justify-between gap-2 mb-2"><div class="flex items-center gap-2.5"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-mint to-mintdark text-white font-bold flex items-center justify-center text-sm shadow-sm">${escapeHTML(safeName.charAt(0).toUpperCase() || 'B')}</div><div><h4 class="text-sm font-bold text-darkchoco leading-tight">${escapeHTML(safeName)}</h4><span class="text-[11px] text-darkchocolight">${escapeHTML(rev.date)}</span></div></div><div class="flex flex-col items-end"><div class="flex items-center gap-0.5">${stars}</div><span class="text-[10px] font-bold text-mintdark mt-0.5">${rev.type === 'product' ? '🍰 รีวิวสินค้า' : '💬 รีวิวบริการ'}</span></div></div>
+                    ${rev.productTitle ? `<div class="mb-2 text-xs font-semibold px-2.5 py-1 rounded-xl bg-warmcream text-darkchoco inline-flex items-center gap-1 border border-mint/30"><i class="fa-solid fa-bag-shopping text-mintdark"></i><span>${escapeHTML(rev.productTitle)}</span></div>` : ''}
+                    ${tags ? `<div class="flex flex-wrap gap-1 mb-2">${tags}</div>` : ''}<p class="text-xs text-darkchoco leading-relaxed whitespace-pre-line mt-1">${escapeHTML(rev.comment)}</p>${photoHtml}${adminHeart}${adminReply}</div>
+                    <div><div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between text-xs text-darkchocolight"><button onclick="toggleUserLike('${safeId}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isLiked ? 'bg-rose-500 text-white' : 'bg-white/90 text-darkchoco hover:bg-softpink hover:text-rose-600'} transition-all border border-mint/40 font-semibold shadow-sm transform active:scale-95"><i class="fa-solid fa-heart ${isLiked ? 'text-white' : 'text-rose-400'}"></i><span>${isLiked ? 'ถูกใจแล้ว' : 'ถูกใจ'} (${Math.max(0, Number(rev.likes || 0))})</span></button><span class="text-[10px] text-darkchocolight/80">ยืนยันจากลูกค้าจริง</span></div>${controls}</div></div>`;
+            }).join('');
+        }
 
-    const starFilter = document.getElementById('filterStarSelect')?.value || 'ALL';
-    const productFilter = document.getElementById('filterProductSelect')?.value || 'ALL';
-    const searchText = (document.getElementById('filterSearchInput')?.value || '').toLowerCase().trim();
+        async function toggleUserLike(reviewId) {
+            if (!(await requireSupabase())) return;
+            const rev = reviews.find(r => r.id === reviewId); if (!rev) return;
+            const { data, error } = await sb.rpc('toggle_review_like', { p_review_id: reviewId, p_client_id: likeClientId });
+            if (error) return showToast(`กดถูกใจไม่สำเร็จ: ${error.message}`, 'error');
+            const result = Array.isArray(data) ? data[0] : data;
+            const liked = Boolean(result?.liked);
+            rev.likes = Number(result?.likes_count ?? rev.likes);
+            if (liked && !userLikedIds.includes(reviewId)) userLikedIds.push(reviewId);
+            if (!liked) userLikedIds = userLikedIds.filter(id => id !== reviewId);
+            persistLikedIds(); renderReviews();
+        }
 
-    const targetType = (currentMainTab === 'product-reviews') ? 'product' : 'service';
-    let filtered = reviews.filter(r => r.type === targetType);
-
-    if (targetType === 'product' && productFilter !== 'ALL') {
-        filtered = filtered.filter(r => r.productId === productFilter);
-    }
-
-    if (starFilter !== 'ALL') {
-        const minStars = parseInt(starFilter, 10);
-        filtered = filtered.filter(r => r.rating >= minStars);
-    }
-
-    if (searchText !== '') {
-        filtered = filtered.filter(r =>
-            String(r.userName || '').toLowerCase().includes(searchText) ||
-            String(r.comment || '').toLowerCase().includes(searchText) ||
-            String(r.productTitle || '').toLowerCase().includes(searchText) ||
-            (Array.isArray(r.tags) && r.tags.some(t => String(t).toLowerCase().includes(searchText)))
-        );
-    }
-
-    if (filtered.length === 0) {
-        grid.innerHTML = '';
-        emptyView?.classList.remove('hidden');
-        return;
-    }
-    emptyView?.classList.add('hidden');
-
-    grid.innerHTML = filtered.map((rev, index) => {
-        const safeId = safeEntityId(rev.id, `rev-safe-${index}`);
-        const safeUserName = clampText(rev.userName, MAX_REVIEW_NAME) || 'ลูกค้า';
-        const escapedUserName = escapeHTML(safeUserName);
-        const escapedDate = escapeHTML(clampText(rev.date, 40));
-        const escapedComment = escapeHTML(clampText(rev.comment, MAX_REVIEW_COMMENT));
-        const escapedProductTitle = rev.productTitle ? escapeHTML(clampText(rev.productTitle, MAX_PRODUCT_TITLE)) : '';
-        const rating = Math.max(1, Math.min(5, parseInt(rev.rating, 10) || 5));
-        const likes = Math.max(0, parseInt(rev.likes, 10) || 0);
-        const isUserLiked = userLikedIds.includes(safeId);
-
-        const starsHtml = Array.from({length: 5}, (_, i) =>
-            `<i class="fa-solid fa-star ${i < rating ? 'text-amber-400' : 'text-gray-300'} text-sm"></i>`
-        ).join('');
-
-        const tagsHtml = (Array.isArray(rev.tags) ? rev.tags : []).slice(0, 8).map(t =>
-            `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mint/20 text-darkchoco border border-mint/40">#${escapeHTML(clampText(t, 60))}</span>`
-        ).join('');
-
-        const safePhoto = safeImageSrc(rev.photo, '');
-        const photoHtml = safePhoto ?
-            `<div class="mt-3">
-                <img src="${escapeHTML(safePhoto)}" alt="Review evidence" class="max-h-48 rounded-xl border border-mint/40 object-cover shadow-sm">
-            </div>` : '';
-
-        const adminReplyHtml = rev.adminReply ?
-            `<div class="mt-3 p-3 rounded-2xl bg-warmcream/90 border border-mint/40 text-xs relative">
-                <div class="flex items-center gap-1.5 font-bold text-darkchoco mb-1">
-                    <span>🧁 เจ้าของร้าน Butter Cake ตอบกลับ:</span>
-                </div>
-                <p class="text-darkchocolight whitespace-pre-line">${escapeHTML(clampText(rev.adminReply, MAX_ADMIN_REPLY))}</p>
-            </div>` : '';
-
-        const adminHeartBadgeHtml = rev.adminHeart ?
-            `<div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-300 shadow-sm animate-pulse">
-                <i class="fa-solid fa-heart text-rose-500"></i>
-                <span>💖 เจ้าของร้านถูกใจสิ่งนี้</span>
-            </div>` : '';
-
-        const adminControlsHtml = isAdminLoggedIn ?
-            `<div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-mint/20 bg-mint/10 -mx-5 -mb-5 p-3 rounded-b-2xl">
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminHeart('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg ${rev.adminHeart ? 'bg-rose-500 text-white' : 'bg-rose-100 text-rose-700'} font-bold hover:opacity-90 transition-all">
-                        <i class="fa-solid fa-heart mr-1"></i> ${rev.adminHeart ? 'ถอนหัวใจเจ้าของร้าน' : 'กดใจในนามเจ้าของร้าน'}
-                    </button>
-                    <button onclick="openAdminReplyModal('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg bg-darkchoco text-white font-bold hover:bg-darkchocolight transition-all">
-                        <i class="fa-solid fa-reply mr-1"></i> ตอบกลับ
-                    </button>
-                </div>
-                <button onclick="deleteReview('${safeId}')" class="text-xs px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold hover:bg-rose-200">
-                    <i class="fa-solid fa-trash mr-1"></i> ลบ
-                </button>
-            </div>` : '';
-
-        return `
-            <div class="glass-card rounded-2xl p-5 shadow-md border border-mint/30 flex flex-col justify-between hover:shadow-lg transition-all">
-                <div>
-                    <div class="flex items-start justify-between gap-2 mb-2">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-mint to-mintdark text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                                ${escapeHTML(safeUserName.charAt(0).toUpperCase() || 'B')}
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-darkchoco leading-tight">${escapedUserName}</h4>
-                                <span class="text-[11px] text-darkchocolight">${escapedDate}</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <div class="flex items-center gap-0.5">${starsHtml}</div>
-                            <span class="text-[10px] font-bold text-mintdark mt-0.5">
-                                ${rev.type === 'product' ? '🍰 รีวิวสินค้า' : '💬 รีวิวบริการ'}
-                            </span>
-                        </div>
-                    </div>
-
-                    ${escapedProductTitle ? `
-                        <div class="mb-2 text-xs font-semibold px-2.5 py-1 rounded-xl bg-warmcream text-darkchoco inline-flex items-center gap-1 border border-mint/30">
-                            <i class="fa-solid fa-bag-shopping text-mintdark"></i>
-                            <span>${escapedProductTitle}</span>
-                        </div>
-                    ` : ''}
-
-                    ${Array.isArray(rev.tags) && rev.tags.length > 0 ? `<div class="flex flex-wrap gap-1 mb-2">${tagsHtml}</div>` : ''}
-
-                    <p class="text-xs text-darkchoco leading-relaxed whitespace-pre-line mt-1">
-                        ${escapedComment}
-                    </p>
-
-                    ${photoHtml}
-                    ${adminHeartBadgeHtml}
-                    ${adminReplyHtml}
-                </div>
-
-                <div>
-                    <div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between text-xs text-darkchocolight">
-                        <button onclick="toggleUserLike('${safeId}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isUserLiked ? 'bg-rose-500 text-white' : 'bg-white/90 text-darkchoco hover:bg-softpink hover:text-rose-600'} transition-all border border-mint/40 font-semibold shadow-sm transform active:scale-95">
-                            <i class="fa-solid fa-heart ${isUserLiked ? 'text-white' : 'text-rose-400'}"></i>
-                            <span>${isUserLiked ? 'ถูกใจแล้ว' : 'ถูกใจ'} (${likes})</span>
-                        </button>
-                        <span class="text-[10px] text-darkchocolight/80">ยืนยันจากลูกค้าจริง</span>
-                    </div>
-
-                    ${adminControlsHtml}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-
-function toggleUserLike(reviewId) {
-    const safeId = safeEntityId(reviewId);
-    const rev = reviews.find(r => r.id === safeId);
-    if (!rev) return;
-
-    const index = userLikedIds.indexOf(safeId);
-    if (index > -1) {
-        userLikedIds.splice(index, 1);
-        rev.likes = Math.max(0, (rev.likes || 1) - 1);
-        showToast('🤍 ยกเลิกการถูกใจแล้ว', 'info');
-    } else {
-        userLikedIds.push(safeId);
-        rev.likes = Math.max(0, parseInt(rev.likes, 10) || 0) + 1;
-        showToast('💖 ถูกใจรีวิวนี้แล้ว!', 'success');
-    }
-
-    saveJSON(LOCAL_STORAGE_USER_LIKES_KEY, userLikedIds);
-    saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews);
-    renderReviews();
-}
-
-
-function toggleAdminHeart(reviewId) {
-    if (!requireAdmin()) return;
-    const safeId = safeEntityId(reviewId);
-    const rev = reviews.find(r => r.id === safeId);
-    if (!rev) return;
-
-    rev.adminHeart = !rev.adminHeart;
-    if (!saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews)) return;
-    renderReviews();
-
-    if (rev.adminHeart) {
-        showToast('💖 เพิ่มป้าย "เจ้าของร้านถูกใจสิ่งนี้" แล้ว!', 'success');
-    } else {
-        showToast('ถอนหัวใจเจ้าของร้านเรียบร้อยแล้ว', 'info');
-    }
-}
+        async function toggleAdminHeart(reviewId) {
+            if (!(await requireAdmin())) return;
+            const rev = reviews.find(r => r.id === reviewId); if (!rev) return;
+            const next = !rev.adminHeart;
+            const { error } = await sb.from('reviews').update({ is_liked_by_admin: next }).eq('id', reviewId);
+            if (error) return showToast(`บันทึกหัวใจไม่สำเร็จ: ${error.message}`, 'error');
+            rev.adminHeart = next; renderReviews(); showToast(next ? '💖 เจ้าของร้านถูกใจรีวิวนี้แล้ว!' : 'ถอนหัวใจเจ้าของร้านแล้ว', 'success');
+        }
 
         function updateStatsAndBadges() {
             const total = reviews.length;
             const productRevCount = reviews.filter(r => r.type === 'product').length;
             const serviceRevCount = reviews.filter(r => r.type === 'service').length;
-
-            let sum = 0;
-            reviews.forEach(r => sum += r.rating);
-            const avg = total > 0 ? (sum / total).toFixed(1) : '5.0';
-
-            const statTotal = document.getElementById('statTotalReviews');
-            const statAvg = document.getElementById('statAvgRating');
-            const countProd = document.getElementById('countBadgeProductReviews');
-            const countServ = document.getElementById('countBadgeServiceReviews');
-
-            if (statTotal) statTotal.innerText = total;
-            if (statAvg) statAvg.innerText = avg;
-            if (countProd) countProd.innerText = productRevCount;
-            if (countServ) countServ.innerText = serviceRevCount;
+            const avg = total ? (reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / total).toFixed(1) : '5.0';
+            document.getElementById('statTotalReviews').innerText = total;
+            document.getElementById('statAvgRating').innerText = avg;
+            document.getElementById('countBadgeProductReviews').innerText = productRevCount;
+            document.getElementById('countBadgeServiceReviews').innerText = serviceRevCount;
         }
 
-        function openWriteReviewModal() {
-            const modal = document.getElementById('modalWriteReview');
-            modal?.classList.remove('hidden');
-            setReviewTypeForm(currentMainTab === 'service-reviews' ? 'service' : 'product');
-        }
-
-        function closeWriteReviewModal() {
-            const modal = document.getElementById('modalWriteReview');
-            modal?.classList.add('hidden');
-            clearPhotoPreview();
-        }
+        function openWriteReviewModal() { document.getElementById('modalWriteReview')?.classList.remove('hidden'); setReviewTypeForm(currentMainTab === 'service-reviews' ? 'service' : 'product'); }
+        function closeWriteReviewModal() { document.getElementById('modalWriteReview')?.classList.add('hidden'); clearPhotoPreview(); }
 
         function setReviewTypeForm(type) {
-            currentFormReviewType = type;
-            const btnProd = document.getElementById('typeBtnProduct');
-            const btnServ = document.getElementById('typeBtnService');
-            const prodGroup = document.getElementById('formProductSelectGroup');
-
-            if (type === 'product') {
-                btnProd.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5";
-                btnServ.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5";
-                prodGroup?.classList.remove('hidden');
+            currentFormReviewType = type === 'service' ? 'service' : 'product';
+            const btnProd = document.getElementById('typeBtnProduct'); const btnServ = document.getElementById('typeBtnService'); const group = document.getElementById('formProductSelectGroup');
+            if (currentFormReviewType === 'product') {
+                btnProd.className = 'py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5';
+                btnServ.className = 'py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5'; group?.classList.remove('hidden');
             } else {
-                btnServ.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5";
-                btnProd.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5";
-                prodGroup?.classList.add('hidden');
+                btnServ.className = 'py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5';
+                btnProd.className = 'py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5'; group?.classList.add('hidden');
             }
         }
 
         function setRating(rating) {
-            currentSelectedRating = rating;
-            const picker = document.getElementById('starPicker');
-            const starText = document.getElementById('starText');
-            if (!picker) return;
-
-            const stars = picker.querySelectorAll('i');
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.className = 'fa-solid fa-star text-amber-400';
-                } else {
-                    star.className = 'fa-solid fa-star text-gray-300';
-                }
-            });
-
-            const labels = [
-                '1.0 - ควรปรับปรุง 🥺',
-                '2.0 - พอใช้ได้ 😐',
-                '3.0 - ปานกลาง 🙂',
-                '4.0 - ดีเยี่ยม 😊',
-                '5.0 - ประทับใจมากที่สุด! ❤️'
-            ];
-            if (starText) starText.innerText = labels[rating - 1] || '5.0 - ดีเยี่ยม!';
+            currentSelectedRating = Math.max(1, Math.min(5, Number(rating)));
+            const stars = document.getElementById('starPicker')?.querySelectorAll('i');
+            stars?.forEach((star, i) => star.className = `fa-solid fa-star ${i < currentSelectedRating ? 'text-amber-400' : 'text-gray-300'}`);
+            const labels = ['1.0 - ควรปรับปรุง 🥺','2.0 - พอใช้ได้ 😐','3.0 - ปานกลาง 🙂','4.0 - ดีเยี่ยม 😊','5.0 - ประทับใจมากที่สุด! ❤️'];
+            const text = document.getElementById('starText'); if (text) text.innerText = labels[currentSelectedRating - 1];
         }
 
         function hoverStar(rating) {
-            const picker = document.getElementById('starPicker');
-            if (!picker) return;
-            const stars = picker.querySelectorAll('i');
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add('text-amber-400');
-                    star.classList.remove('text-gray-300');
-                } else {
-                    star.classList.remove('text-amber-400');
-                    star.classList.add('text-gray-300');
-                }
+            document.getElementById('starPicker')?.querySelectorAll('i').forEach((star, i) => {
+                star.classList.toggle('text-amber-400', i < rating); star.classList.toggle('text-gray-300', i >= rating);
             });
         }
 
         function toggleTag(btn, tagText) {
-            if (selectedTags.includes(tagText)) {
-                selectedTags = selectedTags.filter(t => t !== tagText);
-                btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium";
-            } else {
-                selectedTags.push(tagText);
-                btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-darkchoco bg-darkchoco text-white font-medium shadow-sm";
-            }
+            if (selectedTags.includes(tagText)) { selectedTags = selectedTags.filter(t => t !== tagText); btn.className = 'tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium'; }
+            else { selectedTags.push(tagText); btn.className = 'tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-darkchoco bg-darkchoco text-white font-medium shadow-sm'; }
         }
 
-
-async function previewReviewPhoto(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-        currentPhotoBase64 = await compressImageFile(file, 1280, 0.82);
-        const img = document.getElementById('photoPreview');
-        const container = document.getElementById('photoPreviewContainer');
-        if (img && container) {
-            img.src = currentPhotoBase64;
-            container.classList.remove('hidden');
+        function previewReviewPhoto(event) {
+            const file = event.target.files?.[0]; if (!file) return;
+            const v = validateImageFile(file); if (!v.ok) { event.target.value = ''; return showToast(v.message, 'error'); }
+            currentReviewPhotoFile = file;
+            const img = document.getElementById('photoPreview'); const c = document.getElementById('photoPreviewContainer');
+            if (img && c) { img.src = URL.createObjectURL(file); c.classList.remove('hidden'); }
         }
-    } catch (err) {
-        clearPhotoPreview();
-        showToast(err.message || 'ไม่สามารถใช้รูปภาพนี้ได้', 'error');
-    }
-}
 
         function clearPhotoPreview() {
-            currentPhotoBase64 = null;
-            const input = document.getElementById('formPhotoInput');
-            const container = document.getElementById('photoPreviewContainer');
-            if (input) input.value = '';
-            if (container) container.classList.add('hidden');
+            currentReviewPhotoFile = null; const input = document.getElementById('formPhotoInput'); const c = document.getElementById('photoPreviewContainer'); const img = document.getElementById('photoPreview');
+            if (input) input.value = ''; if (c) c.classList.add('hidden'); if (img?.src?.startsWith('blob:')) URL.revokeObjectURL(img.src);
         }
 
-
-function handleReviewSubmit(e) {
-    e.preventDefault();
-
-    const nameInput = document.getElementById('formName');
-    const commentInput = document.getElementById('formComment');
-    const productSelect = document.getElementById('formProductSelect');
-
-    const userName = clampText(nameInput.value, MAX_REVIEW_NAME);
-    const comment = clampText(commentInput.value, MAX_REVIEW_COMMENT);
-
-    if (!userName || !comment) {
-        showToast('กรุณากรอกชื่อและข้อความรีวิวให้ครบถ้วน', 'error');
-        return;
-    }
-
-    let productId = null;
-    let productTitle = null;
-
-    if (currentFormReviewType === 'product') {
-        productId = safeEntityId(productSelect.value, null);
-        const pObj = products.find(p => p.id === productId);
-        if (!pObj) {
-            showToast('กรุณาเลือกสินค้าที่มีอยู่ในร้าน', 'error');
-            return;
-        }
-        productTitle = clampText(pObj.title, MAX_PRODUCT_TITLE);
-    }
-
-    const bkk = getBangkokTimeParts();
-    const dateStr = `${bkk.year}-${bkk.month}-${bkk.day} ${String(bkk.hour).padStart(2, '0')}:${String(bkk.minute).padStart(2, '0')}`;
-
-    const newReview = {
-        id: createSafeId('rev'),
-        type: currentFormReviewType === 'service' ? 'service' : 'product',
-        productId,
-        productTitle,
-        userName,
-        rating: Math.max(1, Math.min(5, parseInt(currentSelectedRating, 10) || 5)),
-        tags: selectedTags.slice(0, 8).map(t => clampText(t, 60)),
-        comment,
-        photo: safeImageSrc(currentPhotoBase64, null),
-        date: dateStr,
-        likes: 0,
-        adminHeart: false,
-        adminReply: null
-    };
-
-    reviews.unshift(newReview);
-    if (!saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews)) {
-        newReview.photo = null;
-        if (!saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews)) {
-            reviews.shift();
-            return;
-        }
-        showToast('รูปมีขนาดใหญ่เกินพื้นที่จัดเก็บ จึงบันทึกรีวิวโดยไม่แนบรูป', 'info');
-    }
-
-    closeWriteReviewModal();
-
-    if (currentFormReviewType === 'product') {
-        switchMainTab('product-reviews');
-    } else {
-        switchMainTab('service-reviews');
-    }
-
-    updateStatsAndBadges();
-    showToast('🎉 ขอบคุณสำหรับรีวิวความประทับใจนะคะ!', 'success');
-
-    nameInput.value = '';
-    commentInput.value = '';
-    selectedTags = [];
-    currentPhotoBase64 = null;
-    document.querySelectorAll('.tag-chip').forEach(btn => {
-        btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium";
-    });
-}
-
-        function openAdminModal() {
-            document.getElementById('modalAdminLogin')?.classList.remove('hidden');
-        }
-
-        function closeAdminModal() {
-            document.getElementById('modalAdminLogin')?.classList.add('hidden');
-        }
-
-
-async function handleAdminLogin(e) {
-    e.preventDefault();
-
-    const userEl = document.getElementById('adminUser');
-    const passEl = document.getElementById('adminPass');
-    const u = clampText(userEl.value, 80);
-    const p = String(passEl.value || '');
-
-    const attemptsKey = 'buttercake_admin_failed_attempts_v2';
-    const lockKey = 'buttercake_admin_lock_until_v2';
-    const lockUntil = Number(sessionStorage.getItem(lockKey) || 0);
-
-    if (Date.now() < lockUntil) {
-        const seconds = Math.ceil((lockUntil - Date.now()) / 1000);
-        showToast(`ลองใหม่ได้อีกครั้งในประมาณ ${seconds} วินาที`, 'error');
-        return;
-    }
-
-    try {
-        const passwordHash = await sha256Hex(p);
-        if (u === ADMIN_USERNAME && passwordHash === ADMIN_PASSWORD_SHA256) {
-            isAdminLoggedIn = true;
-            sessionStorage.setItem(SESSION_STORAGE_ADMIN_KEY, '1');
-            sessionStorage.removeItem(attemptsKey);
-            sessionStorage.removeItem(lockKey);
-
-            closeAdminModal();
-            updateAdminUI();
-            renderProducts();
-            renderReviews();
-            showToast('🔑 เข้าสู่ระบบแอดมินสำเร็จ!', 'success');
-            userEl.value = '';
-            passEl.value = '';
-        } else {
-            const attempts = Number(sessionStorage.getItem(attemptsKey) || 0) + 1;
-            sessionStorage.setItem(attemptsKey, String(attempts));
-            if (attempts >= 5) {
-                sessionStorage.setItem(lockKey, String(Date.now() + 60_000));
-                sessionStorage.setItem(attemptsKey, '0');
-                showToast('กรอกรหัสผิดหลายครั้ง ระบบล็อกชั่วคราว 60 วินาที', 'error');
-            } else {
-                showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+        async function handleReviewSubmit(e) {
+            e.preventDefault(); if (!(await requireSupabase())) return;
+            const nameInput = document.getElementById('formName'); const commentInput = document.getElementById('formComment'); const productSelect = document.getElementById('formProductSelect');
+            const authorName = clampText(nameInput.value, MAX_REVIEW_NAME); const comment = clampText(commentInput.value, MAX_REVIEW_COMMENT);
+            if (!authorName || !comment) return showToast('กรุณากรอกชื่อและข้อความรีวิวให้ครบถ้วน', 'error');
+            let productId = null, productTitle = null;
+            if (currentFormReviewType === 'product') {
+                productId = productSelect.value; const p = products.find(x => x.id === productId);
+                if (!p) return showToast('กรุณาเลือกสินค้าที่มีอยู่ในร้าน', 'error');
+                productTitle = p.title;
             }
-        }
-    } catch (err) {
-        console.error(err);
-        showToast('เบราว์เซอร์นี้ไม่รองรับระบบเข้าสู่ระบบที่ปลอดภัยขึ้น กรุณาใช้ Chrome/Edge/Firefox รุ่นใหม่', 'error');
-    }
-}
-
-
-function openAdminSettingsModal() {
-    if (!requireAdmin()) return;
-
-    document.getElementById('settingLineId').value = storeConfig.lineId || '@755jvmsc';
-    document.getElementById('settingLineLink').value = storeConfig.lineLink || 'https://lin.ee/rrbLyYT';
-    document.getElementById('settingFbLink').value = storeConfig.fbLink || 'https://www.facebook.com/share/1Eoo8p4Dn5/?mibextid=wwXIfr';
-    document.getElementById('settingStatusMode').value = storeConfig.statusMode || 'auto';
-
-    document.getElementById('modalAdminSettings')?.classList.remove('hidden');
-}
-
-        function closeAdminSettingsModal() {
-            document.getElementById('modalAdminSettings')?.classList.add('hidden');
+            const submitBtn = e.submitter; if (submitBtn) submitBtn.disabled = true;
+            try {
+                let imageUrl = null;
+                if (currentReviewPhotoFile) imageUrl = await uploadPublicImage(currentReviewPhotoFile, 'reviews', 'review');
+                const payload = { product_id: productId, review_type: currentFormReviewType, author_name: authorName, rating: currentSelectedRating, tags: selectedTags.slice(0,8), comment, image_url: imageUrl };
+                const { error } = await sb.from('reviews').insert(payload);
+                if (error) { if (imageUrl) await removeStorageUrl(imageUrl); throw error; }
+                closeWriteReviewModal(); nameInput.value = ''; commentInput.value = ''; selectedTags = [];
+                document.querySelectorAll('.tag-chip').forEach(btn => btn.className = 'tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium');
+                await loadReviews(); updateStatsAndBadges(); switchMainTab(currentFormReviewType === 'product' ? 'product-reviews' : 'service-reviews');
+                showToast('🎉 ขอบคุณสำหรับรีวิวความประทับใจนะคะ!', 'success');
+            } catch (err) { showToast(`ส่งรีวิวไม่สำเร็จ: ${err.message}`, 'error'); }
+            finally { if (submitBtn) submitBtn.disabled = false; }
         }
 
+        function openAdminModal() { document.getElementById('modalAdminLogin')?.classList.remove('hidden'); }
+        function closeAdminModal() { document.getElementById('modalAdminLogin')?.classList.add('hidden'); }
 
-async function handleSaveStoreSettings(e) {
-    e.preventDefault();
-    if (!requireAdmin()) return;
-
-    const lineId = clampText(document.getElementById('settingLineId').value, 80);
-    const rawLineLink = document.getElementById('settingLineLink').value.trim();
-    const rawFbLink = document.getElementById('settingFbLink').value.trim();
-    const lineLink = sanitizeExternalUrl(rawLineLink, '');
-    const fbLink = sanitizeExternalUrl(rawFbLink, '');
-    const statusMode = document.getElementById('settingStatusMode').value;
-    const logoInput = document.getElementById('settingLogoInput');
-
-    if (!lineId) {
-        showToast('กรุณากรอก LINE ID', 'error');
-        return;
-    }
-    if (!lineLink || !fbLink) {
-        showToast('ลิงก์ LINE และ Facebook ต้องเป็น https:// ที่ถูกต้อง', 'error');
-        return;
-    }
-    if (!['auto', 'open', 'closed'].includes(statusMode)) {
-        showToast('สถานะร้านไม่ถูกต้อง', 'error');
-        return;
-    }
-
-    storeConfig.lineId = lineId;
-    storeConfig.lineLink = lineLink;
-    storeConfig.fbLink = fbLink;
-    storeConfig.statusMode = statusMode;
-
-    if (logoInput.files?.[0]) {
-        try {
-            storeConfig.logo = await compressImageFile(logoInput.files[0], 900, 0.84);
-        } catch (err) {
-            showToast(err.message || 'ไม่สามารถใช้โลโก้นี้ได้', 'error');
-            return;
+        async function handleAdminLogin(e) {
+            e.preventDefault(); if (!(await requireSupabase())) return;
+            const email = clampText(document.getElementById('adminUser').value, 160).toLowerCase(); const password = String(document.getElementById('adminPass').value || '');
+            if (!email || !password) return showToast('กรุณากรอกอีเมลและรหัสผ่าน', 'error');
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) return showToast('อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
+            const ok = await requireAdmin();
+            if (!ok) { await sb.auth.signOut(); return; }
+            closeAdminModal(); renderProducts(); renderReviews(); showToast('🔑 เข้าสู่ระบบแอดมินสำเร็จ!', 'success');
+            document.getElementById('adminPass').value = '';
         }
-    }
 
-    saveAndApplyStoreConfig();
-}
+        async function openAdminSettingsModal() {
+            if (!(await requireAdmin())) return;
+            document.getElementById('settingLineId').value = storeConfig.lineId || defaultStoreConfig.lineId;
+            document.getElementById('settingLineLink').value = storeConfig.lineLink || defaultStoreConfig.lineLink;
+            document.getElementById('settingFbLink').value = storeConfig.fbLink || defaultStoreConfig.fbLink;
+            document.getElementById('settingStatusMode').value = storeConfig.statusMode || 'auto';
+            document.getElementById('modalAdminSettings')?.classList.remove('hidden');
+        }
+        function closeAdminSettingsModal() { document.getElementById('modalAdminSettings')?.classList.add('hidden'); }
 
+        async function handleSaveStoreSettings(e) {
+            e.preventDefault(); if (!(await requireAdmin())) return;
+            const lineId = clampText(document.getElementById('settingLineId').value, 80);
+            const lineUrl = sanitizeExternalUrl(document.getElementById('settingLineLink').value, '');
+            const fbUrl = sanitizeExternalUrl(document.getElementById('settingFbLink').value, '');
+            const statusMode = document.getElementById('settingStatusMode').value;
+            if (!lineId || !lineUrl || !fbUrl) return showToast('กรุณากรอกข้อมูลร้านและลิงก์ https:// ให้ถูกต้อง', 'error');
+            if (!['auto','open','closed'].includes(statusMode)) return showToast('สถานะร้านไม่ถูกต้อง', 'error');
+            const logoFile = document.getElementById('settingLogoInput').files?.[0];
+            let logoUrl = storeConfig.logo;
+            try {
+                if (logoFile) logoUrl = await uploadPublicImage(logoFile, 'store', 'logo');
+                const payload = { logo_url: logoUrl, line_id: lineId, line_url: lineUrl, facebook_url: fbUrl, status_mode: statusMode, is_open: statusMode !== 'closed' };
+                let error;
+                if (storeConfigId) ({ error } = await sb.from('store_config').update(payload).eq('id', storeConfigId));
+                else {
+                    const res = await sb.from('store_config').insert(payload).select('id').single(); error = res.error; if (!error) storeConfigId = res.data.id;
+                }
+                if (error) { if (logoFile && logoUrl !== storeConfig.logo) await removeStorageUrl(logoUrl); throw error; }
+                if (logoFile && storeConfig.logo !== defaultStoreConfig.logo) await removeStorageUrl(storeConfig.logo);
+                storeConfig = { logo: logoUrl, lineId, lineLink: lineUrl, fbLink: fbUrl, statusMode };
+                applyStoreConfigToUI(); checkStoreOpeningStatus(); renderProducts(); closeAdminSettingsModal(); showToast('💾 บันทึกการตั้งค่าร้านค้าเรียบร้อยแล้ว!', 'success');
+            } catch (err) { showToast(`บันทึกตั้งค่าไม่สำเร็จ: ${err.message}`, 'error'); }
+        }
 
-function saveAndApplyStoreConfig() {
-    if (!requireAdmin()) return;
-    normalizePersistentData();
-    if (!saveJSON(LOCAL_STORAGE_STORE_CONFIG_KEY, storeConfig)) return;
-
-    applyStoreConfigToUI();
-    checkStoreOpeningStatus();
-    renderProducts();
-    closeAdminSettingsModal();
-    showToast('💾 บันทึกการตั้งค่าร้านค้าเรียบร้อยแล้ว!', 'success');
-}
-
-
-function logoutAdmin() {
-    isAdminLoggedIn = false;
-    sessionStorage.removeItem(SESSION_STORAGE_ADMIN_KEY);
-    closeAdminSettingsModal();
-    updateAdminUI();
-    renderProducts();
-    renderReviews();
-    showToast('ออกจากระบบแอดมินแล้ว', 'info');
-}
+        async function logoutAdmin() {
+            if (sb) await sb.auth.signOut(); isAdminLoggedIn = false; closeAdminSettingsModal(); updateAdminUI(); renderProducts(); renderReviews(); showToast('ออกจากระบบแอดมินแล้ว', 'info');
+        }
 
         function updateAdminUI() {
-            const navBtn = document.getElementById('adminNavBtn');
-            const btnSettings = document.getElementById('btnAdminSettings');
-
-            if (isAdminLoggedIn) {
-                if (navBtn) navBtn.classList.add('hidden');
-                if (btnSettings) btnSettings.classList.remove('hidden');
-            } else {
-                if (navBtn) navBtn.classList.remove('hidden');
-                if (btnSettings) btnSettings.classList.add('hidden');
-            }
+            const navBtn = document.getElementById('adminNavBtn'); const btnSettings = document.getElementById('btnAdminSettings');
+            if (isAdminLoggedIn) { navBtn?.classList.add('hidden'); btnSettings?.classList.remove('hidden'); }
+            else { navBtn?.classList.remove('hidden'); btnSettings?.classList.add('hidden'); }
         }
 
+        async function openAdminReplyModal(reviewId) {
+            if (!(await requireAdmin())) return;
+            const rev = reviews.find(r => r.id === reviewId); if (!rev) return;
+            document.getElementById('replyReviewId').value = reviewId;
+            document.getElementById('replyModalTargetUser').innerText = `ตอบกลับคุณ: ${rev.userName}`;
+            document.getElementById('adminReplyText').value = rev.adminReply || '';
+            document.getElementById('modalAdminReply')?.classList.remove('hidden');
+        }
+        function closeAdminReplyModal() { document.getElementById('modalAdminReply')?.classList.add('hidden'); }
 
-function openAdminReplyModal(reviewId) {
-    if (!requireAdmin()) return;
-
-    const safeId = safeEntityId(reviewId);
-    const rev = reviews.find(r => r.id === safeId);
-    if (!rev) return;
-
-    const modal = document.getElementById('modalAdminReply');
-    const inputId = document.getElementById('replyReviewId');
-    const targetText = document.getElementById('replyModalTargetUser');
-    if (!modal || !inputId || !targetText) return;
-
-    inputId.value = safeId;
-    targetText.innerText = `ตอบกลับคุณ: ${clampText(rev.userName, MAX_REVIEW_NAME)}`;
-    modal.classList.remove('hidden');
-}
-
-        function closeAdminReplyModal() {
-            document.getElementById('modalAdminReply')?.classList.add('hidden');
+        async function handleAdminReplySubmit(e) {
+            e.preventDefault(); if (!(await requireAdmin())) return;
+            const id = document.getElementById('replyReviewId').value; const reply = clampText(document.getElementById('adminReplyText').value, MAX_ADMIN_REPLY);
+            if (!reply) return;
+            const { error } = await sb.from('reviews').update({ admin_reply: reply }).eq('id', id);
+            if (error) return showToast(`ตอบกลับไม่สำเร็จ: ${error.message}`, 'error');
+            const rev = reviews.find(r => r.id === id); if (rev) rev.adminReply = reply;
+            closeAdminReplyModal(); renderReviews(); showToast('🧁 บันทึกการตอบกลับจากเจ้าของร้านแล้ว!', 'success');
         }
 
-
-function handleAdminReplySubmit(e) {
-    e.preventDefault();
-    if (!requireAdmin()) return;
-
-    const id = safeEntityId(document.getElementById('replyReviewId').value);
-    const replyMsg = clampText(document.getElementById('adminReplyText').value, MAX_ADMIN_REPLY);
-
-    const rev = reviews.find(r => r.id === id);
-    if (rev && replyMsg) {
-        rev.adminReply = replyMsg;
-        if (!saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews)) return;
-
-        closeAdminReplyModal();
-        document.getElementById('adminReplyText').value = '';
-        renderReviews();
-        showToast('🧁 บันทึกการตอบกลับจากเจ้าของร้านแล้ว!', 'success');
-    }
-}
-
-
-function deleteReview(reviewId) {
-    if (!requireAdmin()) return;
-
-    const safeId = safeEntityId(reviewId);
-    if (!safeId) return;
-    if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรีวิวนี้?')) return;
-
-    reviews = reviews.filter(r => r.id !== safeId);
-    userLikedIds = userLikedIds.filter(id => id !== safeId);
-
-    if (!saveJSON(LOCAL_STORAGE_REVIEWS_KEY, reviews)) return;
-    saveJSON(LOCAL_STORAGE_USER_LIKES_KEY, userLikedIds);
-    renderReviews();
-    updateStatsAndBadges();
-    showToast('🗑️ ลบรีวิวเรียบร้อยแล้ว', 'info');
-}
-
-
-function openAddProductModal() {
-    if (!requireAdmin()) return;
-    document.getElementById('modalAddProduct')?.classList.remove('hidden');
-}
-
-        function closeAddProductModal() {
-            document.getElementById('modalAddProduct')?.classList.add('hidden');
+        async function deleteReview(reviewId) {
+            if (!(await requireAdmin())) return;
+            const rev = reviews.find(r => r.id === reviewId); if (!rev || !confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรีวิวนี้?')) return;
+            const { error } = await sb.from('reviews').delete().eq('id', reviewId);
+            if (error) return showToast(`ลบรีวิวไม่สำเร็จ: ${error.message}`, 'error');
+            await removeStorageUrl(rev.photo); reviews = reviews.filter(r => r.id !== reviewId); userLikedIds = userLikedIds.filter(id => id !== reviewId); persistLikedIds(); renderReviews(); updateStatsAndBadges(); showToast('🗑️ ลบรีวิวเรียบร้อยแล้ว', 'info');
         }
 
+        async function openAddProductModal() { if (await requireAdmin()) document.getElementById('modalAddProduct')?.classList.remove('hidden'); }
+        function closeAddProductModal() { document.getElementById('modalAddProduct')?.classList.add('hidden'); }
 
-async function handleAddProductSubmit(e) {
-    e.preventDefault();
-    if (!requireAdmin()) return;
-
-    const title = clampText(document.getElementById('newProdTitle').value, MAX_PRODUCT_TITLE);
-    const cat = clampText(document.getElementById('newProdCategory').value, 80);
-    const price = Number(document.getElementById('newProdPrice').value);
-    const desc = clampText(document.getElementById('newProdDesc').value, MAX_PRODUCT_DESC);
-    const status = document.getElementById('newProdStatus').value;
-    const imgInput = document.getElementById('newProdImageInput');
-
-    if (!title) {
-        showToast('กรุณากรอกชื่อสินค้า', 'error');
-        return;
-    }
-    if (!Number.isFinite(price) || price <= 0 || price > 10000000) {
-        showToast('กรุณากรอกราคาที่ถูกต้อง', 'error');
-        return;
-    }
-    if (!['มีสินค้า', 'ขายดี', 'หมด'].includes(status)) {
-        showToast('สถานะสินค้าไม่ถูกต้อง', 'error');
-        return;
-    }
-
-    let imgBase64 = null;
-    if (imgInput.files?.[0]) {
-        try {
-            imgBase64 = await compressImageFile(imgInput.files[0], 1280, 0.82);
-        } catch (err) {
-            showToast(err.message || 'ไม่สามารถใช้รูปภาพนี้ได้', 'error');
-            return;
+        async function handleAddProductSubmit(e) {
+            e.preventDefault(); if (!(await requireAdmin())) return;
+            const title = clampText(document.getElementById('newProdTitle').value, MAX_PRODUCT_TITLE);
+            const category = clampText(document.getElementById('newProdCategory').value, 80);
+            const price = Number(document.getElementById('newProdPrice').value);
+            const description = clampText(document.getElementById('newProdDesc').value, MAX_PRODUCT_DESC);
+            const status = document.getElementById('newProdStatus').value;
+            const file = document.getElementById('newProdImageInput').files?.[0];
+            if (!title || !Number.isFinite(price) || price <= 0 || price > 10000000) return showToast('กรุณากรอกชื่อและราคาสินค้าให้ถูกต้อง', 'error');
+            let imageUrl = null;
+            try {
+                if (file) imageUrl = await uploadPublicImage(file, 'products', 'product');
+                const { error } = await sb.from('products').insert({ title, category, price, description, status: statusToDb(status), image_url: imageUrl });
+                if (error) { if (imageUrl) await removeStorageUrl(imageUrl); throw error; }
+                closeAddProductModal(); e.target.reset(); await loadProducts(); renderProducts(); showToast('➕ เพิ่มสินค้าใหม่เรียบร้อยแล้ว!', 'success');
+            } catch (err) { showToast(`เพิ่มสินค้าไม่สำเร็จ: ${err.message}`, 'error'); }
         }
-    }
 
-    const newProd = {
-        id: createSafeId('prod'),
-        title,
-        category: cat || 'สินค้าอื่นๆ',
-        price,
-        desc: desc || 'สินค้าคุณภาพจาก Butter Cake',
-        status,
-        icon: '🎁',
-        image: imgBase64
-    };
-
-    products.unshift(newProd);
-    if (!saveJSON(LOCAL_STORAGE_PRODUCTS_KEY, products)) {
-        products.shift();
-        return;
-    }
-
-    closeAddProductModal();
-    renderProducts();
-    showToast('➕ เพิ่มสินค้าใหม่เรียบร้อยแล้ว!', 'success');
-    e.target.reset();
-}
-
-
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-
-    const toast = document.createElement('div');
-    let bgClass = "bg-darkchoco text-white";
-    if (type === 'success') bgClass = "bg-emerald-600 text-white";
-    if (type === 'error') bgClass = "bg-rose-600 text-white";
-
-    toast.className = `px-4 py-2.5 rounded-2xl shadow-xl font-medium text-xs flex items-center gap-2 border border-white/20 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
-
-    const span = document.createElement('span');
-    span.textContent = String(message ?? '');
-    toast.appendChild(span);
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.remove('translate-y-4', 'opacity-0');
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.add('translate-y-4', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer'); if (!container) return;
+            const toast = document.createElement('div'); let bg = 'bg-darkchoco text-white';
+            if (type === 'success') bg = 'bg-emerald-600 text-white'; if (type === 'error') bg = 'bg-rose-600 text-white';
+            toast.className = `px-4 py-2.5 rounded-2xl shadow-xl font-medium text-xs flex items-center gap-2 border border-white/20 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto ${bg}`;
+            const span = document.createElement('span'); span.textContent = String(message ?? ''); toast.appendChild(span); container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-4','opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-y-4','opacity-0'); setTimeout(() => toast.remove(), 300); }, 3500);
+        }
     </script>
 </body>
 </html>
