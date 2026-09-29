@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Butter Cake - ร้านขายไอดีเกม & ของตกแต่งน่ารัก</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Prompt & Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkchoco: '#694a47',
+                        darkchocolight: '#825f5c',
+                        mint: '#96c1c5',
+                        mintlight: '#e2f0f2',
+                        mintdark: '#58989d',
+                        warmcream: '#FFF0DE',
+                        creamlight: '#FFFAF3',
+                        softpink: '#fce4e4'
+                    },
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        kanit: ['Kanit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #FFF0DE;
+            background-image: radial-gradient(#694a47 5px, transparent 5px), radial-gradient(#694a47 5px, #FFF0DE 5px);
+            background-size: 120px 120px;
+            background-position: 0 0, 60px 60px;
+            background-attachment: fixed;
+            color: #4a3432;
+        }
+
+        .bg-overlay-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('image_a62492.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chocolate-particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .choco-particle {
+            position: absolute;
+            display: block;
+            user-select: none;
+            animation: floatUp linear infinite;
+            filter: drop-shadow(0 2px 4px rgba(105, 74, 71, 0.2));
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.85;
+            }
+            85% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF0DE;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #96c1c5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #694a47;
+        }
+
+        .star-rating i {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .star-rating i:hover {
+            transform: scale(1.25) rotate(-5deg);
+        }
+
+        .tab-btn {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-btn.active {
+            background-color: #694a47;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(105, 74, 71, 0.25);
+        }
+
+        .glass-card {
+            background: rgba(255, 250, 243, 0.94);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(150, 193, 197, 0.35);
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col relative text-darkchoco antialiased selection:bg-mint selection:text-darkchoco">
+
+    <div class="bg-overlay-image"></div>
+    <div class="chocolate-particle-container" id="chocolateParticles"></div>
+
+    <div class="relative z-10 flex-grow flex flex-col max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- HEADER SECTION -->
+        <header class="glass-card rounded-3xl p-6 mb-8 shadow-xl border-2 border-mint/40">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Shop Identity -->
+                <div class="flex items-center gap-4 text-center md:text-left">
+                    <div class="relative group">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-darkchoco to-darkchocolight flex items-center justify-center shadow-md transform group-hover:rotate-6 transition-transform border-2 border-mint">
+                            <img id="headerLogoImg" src="image_a788f7.jpg" alt="Butter Cake Logo" class="w-full h-full object-cover">
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 bg-mint text-darkchoco text-[11px] font-bold px-2 py-0.5 rounded-full border-2 border-creamlight shadow-sm">
+                            Official
+                        </span>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
+                            <h1 class="text-2xl sm:text-3xl font-bold font-kanit text-darkchoco">Butter Cake</h1>
+                            <span class="bg-darkchoco/10 text-darkchoco text-xs px-2.5 py-0.5 rounded-full font-semibold border border-darkchoco/20">
+                                Store
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-darkchocolight font-medium">
+                            ร้านขายไอดีเกม Roblox, Genshin, Minecraft & ของตกแต่งน่ารัก ✨
+                        </p>
+                        <div class="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold shadow-inner" id="storeStatusBadge">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Action Buttons -->
+                <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center gap-2.5 w-full md:w-auto">
+                    <!-- LINE Direct Link -->
+                    <a id="headerLineLink" href="https://lin.ee/rrbLyYT" target="_blank" rel="noopener noreferrer" 
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs sm:text-sm transition-all shadow-md hover:shadow-lg transform active:scale-95">
+                        <i class="fa-brands fa-line text-lg"></i>
+                        <span id="headerLineText">แอดไลน์ @755jvmsc</span>
+                    </a>
+
+                    <!-- Copy Line ID Button -->
+                    <button onclick="copyLineID()" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-mint/30 hover:bg-mint/50 text-darkchoco font-medium text-xs transition-all border border-mint/60">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>ก๊อป ID</span>
+                    </button>
+
+                    <!-- Facebook Direct Link -->
+                    <a id="headerFbLink" href="https://www.facebook.com/share/1Eoo8p4Dn5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" 
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs sm:text-sm transition-all shadow-md hover:shadow-lg transform active:scale-95">
+                        <i class="fa-brands fa-facebook text-lg"></i>
+                        <span>เพจ Facebook</span>
+                    </a>
+
+                    <!-- Admin Portal Login Toggle -->
+                    <button onclick="openAdminModal()" id="adminNavBtn" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2.5 rounded-xl bg-darkchoco/10 hover:bg-darkchoco/20 text-darkchoco text-xs font-semibold transition-all">
+                        <i class="fa-solid fa-user-gear mr-1.5"></i>
+                        <span id="adminNavBtnText">แอดมิน</span>
+                    </button>
+
+                    <!-- Admin Settings Button (Shows only when logged in) -->
+                    <button onclick="openAdminSettingsModal()" id="btnAdminSettings" class="hidden w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm transition-all shadow-md transform active:scale-95">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>ตั้งค่าร้าน (แอดมิน)</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- STORE METRICS BANNER -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="glass-card rounded-2xl p-4 text-center border border-mint/40 shadow-sm">
+                <div class="text-2xl sm:text-3xl font-bold font-kanit text-darkchoco" id="statTotalReviews">0</div>
+                <div class="text-xs text-darkchocolight font-medium mt-0.5">รีวิวความประทับใจ</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4 text-center border border-mint/40 shadow-sm">
+                <div class="text-2xl sm:text-3xl font-bold font-kanit text-amber-500 flex items-center justify-center gap-1">
+                    <span id="statAvgRating">5.0</span>
+                    <i class="fa-solid fa-star text-lg"></i>
+                </div>
+                <div class="text-xs text-darkchocolight font-medium mt-0.5">คะแนนเฉลี่ยจากลูกค้า</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4 text-center border border-mint/40 shadow-sm">
+                <div class="text-2xl sm:text-3xl font-bold font-kanit text-emerald-600">100%</div>
+                <div class="text-xs text-darkchocolight font-medium mt-0.5">ได้รับสินค้าแน่นอน</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4 text-center border border-mint/40 shadow-sm">
+                <div class="text-2xl sm:text-3xl font-bold font-kanit text-mintdark">11:30 - 01:30</div>
+                <div class="text-xs text-darkchocolight font-medium mt-0.5">เวลาเปิดทำการทุกวัน</div>
+            </div>
+        </section>
+
+        <!-- TAB NAVIGATION BAR -->
+        <div class="glass-card rounded-2xl p-2 mb-8 shadow-md border border-mint/30 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <button onclick="switchMainTab('products')" id="tabBtnProducts" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-darkchoco hover:bg-darkchoco/10">
+                    <i class="fa-solid fa-store"></i>
+                    <span>รายการสินค้า & ไอดี</span>
+                </button>
+                <button onclick="switchMainTab('product-reviews')" id="tabBtnProductReviews" class="tab-btn active px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-darkchoco hover:bg-darkchoco/10">
+                    <span>🍰</span>
+                    <span>รีวิวสินค้า</span>
+                    <span id="countBadgeProductReviews" class="bg-mint/40 text-darkchoco text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+                <button onclick="switchMainTab('service-reviews')" id="tabBtnServiceReviews" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-darkchoco hover:bg-darkchoco/10">
+                    <span>💬</span>
+                    <span>รีวิวการบริการ</span>
+                    <span id="countBadgeServiceReviews" class="bg-mint/40 text-darkchoco text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+
+            <button onclick="openWriteReviewModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-darkchoco to-darkchocolight text-white font-medium text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>เขียนรีวิวให้ Butter Cake</span>
+            </button>
+        </div>
+
+        <!-- SECTION 1: PRODUCTS SHOWCASE -->
+        <section id="sectionProducts" class="hidden mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold font-kanit text-darkchoco flex items-center gap-2">
+                        <i class="fa-solid fa-shapes text-mintdark"></i> สินค้าและไอดีเกมพร้อมส่ง
+                    </h2>
+                    <p class="text-xs text-darkchocolight">เลือกดูสินค้าและทักสั่งซื้อได้ทาง LINE หรือ Facebook ของร้าน Butter Cake</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
+            </div>
+        </section>
+
+        <!-- SECTION 2: REVIEWS FEED -->
+        <section id="sectionReviews" class="mb-12">
+            <div class="glass-card rounded-2xl p-4 sm:p-6 mb-6 shadow-md border border-mint/30">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold font-kanit text-darkchoco flex items-center gap-2" id="currentTabTitle">
+                            <span>🍰</span> รีวิวสินค้า (Product Reviews)
+                        </h2>
+                        <p class="text-xs text-darkchocolight mt-0.5" id="currentTabDesc">
+                            ความคิดเห็นจากลูกค้าเกี่ยวกับไอดีเกมและของตกแต่งน่ารัก
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <select id="filterProductSelect" onchange="renderReviews()" class="hidden px-3 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco font-medium focus:outline-none focus:ring-2 focus:ring-mint">
+                            <option value="ALL">📦 ทุกสินค้าในร้าน</option>
+                        </select>
+
+                        <select id="filterStarSelect" onchange="renderReviews()" class="px-3 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco font-medium focus:outline-none focus:ring-2 focus:ring-mint">
+                            <option value="ALL">⭐ ทุกคะแนนดาว</option>
+                            <option value="5">⭐⭐⭐⭐⭐ (5 ดาว)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 ดาวขึ้นไป)</option>
+                            <option value="3">⭐⭐⭐ (3 ดาวขึ้นไป)</option>
+                        </select>
+
+                        <div class="relative flex-grow sm:flex-grow-0">
+                            <input type="text" id="filterSearchInput" onkeyup="renderReviews()" placeholder="ค้นหารีวิว..." class="w-full sm:w-40 pl-8 pr-3 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-xs text-darkchocolight"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reviewsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+
+            <div id="emptyReviewsView" class="hidden text-center py-12 glass-card rounded-2xl border border-dashed border-mint">
+                <div class="text-4xl mb-3">🍰</div>
+                <h3 class="text-base font-bold text-darkchoco">ยังไม่มีรีวิวในหมวดหมู่นี้</h3>
+                <p class="text-xs text-darkchocolight mt-1 mb-4">มาร่วมเขียนรีวิวคนแรกให้ร้าน Butter Cake ได้เลย!</p>
+                <button onclick="openWriteReviewModal()" class="px-4 py-2 rounded-xl bg-darkchoco text-white text-xs font-semibold hover:bg-darkchocolight transition-all">
+                    เขียนรีวิวตอนนี้
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="mt-auto glass-card border-t border-mint/40 py-6 text-center text-xs text-darkchocolight relative z-10">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2 font-medium">
+                <span>🍫 Butter Cake Official</span>
+                <span>•</span>
+                <span>เปิดบริการ 11:30 - 01:30 น. ทุกวัน</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a id="footerLineLink" href="https://lin.ee/rrbLyYT" target="_blank" class="hover:text-emerald-600 transition-colors">
+                    <i class="fa-brands fa-line mr-1"></i> <span id="footerLineIdText">LINE: @755jvmsc</span>
+                </a>
+                <a id="footerFbLink" href="https://www.facebook.com/share/1Eoo8p4Dn5/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-colors">
+                    <i class="fa-brands fa-facebook mr-1"></i> Facebook
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: WRITE REVIEW -->
+    <div id="modalWriteReview" class="fixed inset-0 bg-darkchoco/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card max-w-lg w-full rounded-3xl p-6 shadow-2xl border-2 border-mint/60 relative my-8 animate-in fade-in zoom-in duration-200">
+            <button onclick="closeWriteReviewModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-darkchoco/10 text-darkchoco hover:bg-darkchoco hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 rounded-2xl bg-mint/30 text-darkchoco text-2xl flex items-center justify-center mx-auto mb-2">
+                    ✍️
+                </div>
+                <h3 class="text-xl font-bold font-kanit text-darkchoco">เขียนรีวิวความประทับใจ</h3>
+                <p class="text-xs text-darkchocolight">ขอบคุณที่เลือกใช้อุดหนุนสินค้าและบริการร้าน Butter Cake</p>
+            </div>
+
+            <form id="formReview" onsubmit="handleReviewSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1.5">เลือกประเภทการรีวิว <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-2 p-1 bg-warmcream rounded-2xl border border-mint/40">
+                        <button type="button" id="typeBtnProduct" onclick="setReviewTypeForm('product')" class="py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5">
+                            <span>🍰</span>
+                            <span>รีวิวสินค้า</span>
+                        </button>
+                        <button type="button" id="typeBtnService" onclick="setReviewTypeForm('service')" class="py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5">
+                            <span>💬</span>
+                            <span>รีวิวการบริการ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="formProductSelectGroup">
+                    <label class="block text-xs font-bold text-darkchoco mb-1">เลือกสินค้าที่ซื้อ <span class="text-red-500">*</span></label>
+                    <select id="formProductSelect" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco font-medium focus:outline-none focus:ring-2 focus:ring-mint">
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">คะแนนความพึงพอใจ <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-2 star-rating text-2xl text-amber-400 py-1" id="starPicker">
+                        <i class="fa-solid fa-star" onclick="setRating(1)" onmouseover="hoverStar(1)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(2)" onmouseover="hoverStar(2)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(3)" onmouseover="hoverStar(3)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(4)" onmouseover="hoverStar(4)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(5)" onmouseover="hoverStar(5)"></i>
+                    </div>
+                    <span id="starText" class="text-xs font-bold text-mintdark">5.0 - ดีเยี่ยมที่สุด! ❤️</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">ชื่อ / นามสมมุติของคุณ <span class="text-red-500">*</span></label>
+                    <input type="text" id="formName" required placeholder="เช่น คุณส้ม, Roblox_Gamer, Ploy_Cute" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">จุดเด่นที่ประทับใจ</label>
+                    <div class="flex flex-wrap gap-1.5" id="formTagsContainer">
+                        <button type="button" onclick="toggleTag(this, 'แอดมินตอบไว')" class="tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium">⚡ แอดมินตอบไว</button>
+                        <button type="button" onclick="toggleTag(this, 'ได้ไอดีชัวร์')" class="tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium">🔑 ได้ไอดีชัวร์</button>
+                        <button type="button" onclick="toggleTag(this, 'ตรงปก 100%')" class="tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium">✨ ตรงปก 100%</button>
+                        <button type="button" onclick="toggleTag(this, 'น่ารักเป็นกันเอง')" class="tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium">🧸 น่ารักเป็นกันเอง</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">ข้อความรีวิว <span class="text-red-500">*</span></label>
+                    <textarea id="formComment" required rows="3" placeholder="แชร์ความรู้สึกจากการสั่งซื้อไอดีหรือของตกแต่งร้าน Butter Cake..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">รูปภาพประกอบ (ถ้ามี)</label>
+                    <input type="file" id="formPhotoInput" accept="image/*" onchange="previewReviewPhoto(event)" class="w-full text-xs text-darkchocolight file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-mint/40 file:text-darkchoco hover:file:bg-mint">
+                    
+                    <div id="photoPreviewContainer" class="hidden mt-2 relative inline-block">
+                        <img id="photoPreview" class="h-24 rounded-xl border border-mint object-cover shadow-sm" src="" alt="Preview">
+                        <button type="button" onclick="clearPhotoPreview()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-darkchoco to-darkchocolight text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>ส่งรีวิวให้ร้าน Butter Cake</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADMIN LOGIN MODAL -->
+    <div id="modalAdminLogin" class="fixed inset-0 bg-darkchoco/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-3xl p-6 shadow-2xl border-2 border-mint/60 relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-darkchoco/10 text-darkchoco hover:bg-darkchoco hover:text-white flex items-center justify-center transition-all text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 rounded-2xl bg-darkchoco text-white text-xl flex items-center justify-center mx-auto mb-2 shadow-md">
+                    🔒
+                </div>
+                <h3 class="text-lg font-bold font-kanit text-darkchoco">เข้าสู่ระบบแอดมิน / เจ้าของร้าน</h3>
+                <p class="text-xs text-darkchocolight">เฉพาะเจ้าของร้าน Butter Cake เท่านั้น</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">Username</label>
+                    <input type="text" id="adminUser" placeholder="admin" required class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">Password</label>
+                    <input type="password" id="adminPass" placeholder="••••••••" required class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-darkchoco text-white font-bold text-xs shadow hover:bg-darkchocolight transition-all mt-2">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2.5: ADMIN SETTINGS -->
+    <div id="modalAdminSettings" class="fixed inset-0 bg-darkchoco/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-mint/60 relative my-8 animate-in fade-in zoom-in duration-200">
+            <button onclick="closeAdminSettingsModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-darkchoco/10 text-darkchoco hover:bg-darkchoco hover:text-white flex items-center justify-center transition-all text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="mb-5 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold font-kanit text-darkchoco">ตั้งค่าร้าน & จัดการระบบ</h3>
+                    <p class="text-xs text-darkchocolight">แผงควบคุมหลักสำหรับแอดมิน</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <form onsubmit="handleSaveStoreSettings(event)" class="space-y-3 bg-warmcream/60 p-4 rounded-2xl border border-mint/40">
+                    <h4 class="text-xs font-bold text-darkchoco uppercase tracking-wider mb-2"><i class="fa-solid fa-store mr-1"></i> ตั้งค่าข้อมูลร้านค้า</h4>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-darkchoco mb-1">เปลี่ยนโลโก้ร้าน (รูปภาพ)</label>
+                        <input type="file" id="settingLogoInput" accept="image/*" class="w-full text-xs text-darkchocolight file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-mint/40">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-darkchoco mb-1">ไอดี LINE</label>
+                            <input type="text" id="settingLineId" required class="w-full px-3 py-1.5 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-darkchoco mb-1">สถานะร้าน</label>
+                            <select id="settingStatusMode" class="w-full px-3 py-1.5 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                                <option value="auto">⏱️ อัตโนมัติ (ตามเวลา 11:30 - 01:30)</option>
+                                <option value="open">🟢 เปิดร้านเสมอ</option>
+                                <option value="closed">🔴 ปิดร้านชั่วคราว</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-darkchoco mb-1">ลิงก์ LINE (URL)</label>
+                        <input type="text" id="settingLineLink" required class="w-full px-3 py-1.5 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-darkchoco mb-1">ลิงก์ Facebook (URL)</label>
+                        <input type="text" id="settingFbLink" required class="w-full px-3 py-1.5 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint">
+                    </div>
+
+                    <button type="submit" class="w-full py-2 rounded-xl bg-mintdark text-white font-bold text-xs shadow hover:bg-darkchoco transition-all">
+                        บันทึกข้อมูลร้านค้า
+                    </button>
+                </form>
+
+                <div class="space-y-2 pt-2 border-t border-mint/30">
+                    <button onclick="closeAdminSettingsModal(); openAddProductModal();" class="w-full py-2.5 rounded-xl bg-mint text-darkchoco font-bold text-xs shadow hover:bg-mintdark hover:text-white transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> เพิ่มสินค้าใหม่
+                    </button>
+                    <button onclick="logoutAdmin()" class="w-full py-2.5 rounded-xl bg-rose-500 text-white font-bold text-xs shadow hover:bg-rose-600 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADMIN REPLY MODAL -->
+    <div id="modalAdminReply" class="fixed inset-0 bg-darkchoco/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-mint/60 relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeAdminReplyModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-darkchoco/10 text-darkchoco flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-lg font-bold font-kanit text-darkchoco mb-1 flex items-center gap-2">
+                <span>🧁</span> ตอบกลับในนามเจ้าของร้าน Butter Cake
+            </h3>
+            <p class="text-xs text-darkchocolight mb-4" id="replyModalTargetUser">ตอบกลับรีวิวลูกค้า</p>
+
+            <form onsubmit="handleAdminReplySubmit(event)" class="space-y-3">
+                <input type="hidden" id="replyReviewId">
+                <div>
+                    <textarea id="adminReplyText" required rows="3" placeholder="พิมพ์ข้อความตอบกลับน่ารักๆ จากร้าน Butter Cake..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs text-darkchoco focus:outline-none focus:ring-2 focus:ring-mint"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-darkchoco text-white font-bold text-xs shadow hover:bg-darkchocolight transition-all">
+                    บันทึกคำตอบกลับ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADD PRODUCT MODAL (ADMIN) -->
+    <div id="modalAddProduct" class="fixed inset-0 bg-darkchoco/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-mint/60 relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeAddProductModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-darkchoco/10 text-darkchoco flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-lg font-bold font-kanit text-darkchoco mb-1">➕ เพิ่มสินค้าใหม่ในร้าน</h3>
+            <p class="text-xs text-darkchocolight mb-4">เพิ่มไอดีเกมหรือของตกแต่งน่ารักพร้อมรูปภาพ</p>
+
+            <form onsubmit="handleAddProductSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">ชื่อสินค้า / ไอดีเกม</label>
+                    <input type="text" id="newProdTitle" required placeholder="เช่น Roblox Blox Fruits LV.MAX" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-darkchoco mb-1">หมวดหมู่</label>
+                        <select id="newProdCategory" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs focus:outline-none focus:ring-2 focus:ring-mint">
+                            <option value="Roblox">🎮 Roblox</option>
+                            <option value="Genshin Impact">⚔ Genshin Impact</option>
+                            <option value="Minecraft">🧱 Minecraft</option>
+                            <option value="ของตกแต่งน่ารัก">✨ ของตกแต่งน่ารัก</option>
+                            <option value="สินค้าอื่นๆ">🎁 สินค้าอื่นๆ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-darkchoco mb-1">สถานะสินค้า</label>
+                        <select id="newProdStatus" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs focus:outline-none focus:ring-2 focus:ring-mint">
+                            <option value="มีสินค้า">🟢 มีสินค้า</option>
+                            <option value="ขายดี">🔥 ขายดี</option>
+                            <option value="หมด">🔴 หมด</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">ราคา (บาท)</label>
+                    <input type="number" id="newProdPrice" required placeholder="เช่น 290" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">รายละเอียดสินค้า</label>
+                    <input type="text" id="newProdDesc" required placeholder="เช่น มีดาบคู่ ผลตื่นครบ พร้อมเปลี่ยนรหัส" class="w-full px-3.5 py-2 rounded-xl bg-white border border-mint/50 text-xs focus:outline-none focus:ring-2 focus:ring-mint">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-darkchoco mb-1">รูปภาพสินค้า (แสดงในการ์ด)</label>
+                    <input type="file" id="newProdImageInput" accept="image/*" class="w-full text-xs text-darkchocolight file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-mint/40">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-darkchoco text-white font-bold text-xs shadow hover:bg-darkchocolight transition-all">
+                    บันทึกสินค้า
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const LOCAL_STORAGE_REVIEWS_KEY = 'buttercake_reviews_v6';
+        const LOCAL_STORAGE_PRODUCTS_KEY = 'buttercake_products_v6';
+        const LOCAL_STORAGE_ADMIN_KEY = 'buttercake_is_admin';
+        const LOCAL_STORAGE_USER_LIKES_KEY = 'buttercake_user_liked_ids_v6';
+        const LOCAL_STORAGE_STORE_CONFIG_KEY = 'buttercake_store_config_v7';
+
+        let defaultStoreConfig = {
+            logo: 'image_a788f7.jpg',
+            lineId: '@755jvmsc',
+            lineLink: 'https://lin.ee/rrbLyYT',
+            fbLink: 'https://www.facebook.com/share/1Eoo8p4Dn5/?mibextid=wwXIfr',
+            statusMode: 'auto'
+        };
+
+        let storeConfig = {};
+
+        const DEFAULT_PRODUCTS = [
+            {
+                id: 'prod-1',
+                title: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4',
+                category: 'Roblox',
+                price: 350,
+                desc: 'เลเวลเต็ม มีดาบคู่ Cursed Dual Katana + ผลโมจิตื่นครบ สังเกตการณ์ V2 พร้อมเล่น!',
+                status: 'ขายดี',
+                icon: '⚔️',
+                image: null
+            },
+            {
+                id: 'prod-2',
+                title: 'Genshin Impact AR55 + 5 ดาว 8 ตัวแน่นๆ',
+                category: 'Genshin Impact',
+                price: 790,
+                desc: 'ไอดีสะอาด ไม่เคยผูกเบอร์ มี Furina + Raiden Shogun + Mistsplitter Refined',
+                status: 'มีสินค้า',
+                icon: '🌌',
+                image: null
+            },
+            {
+                id: 'prod-3',
+                title: 'ชุดกรอบโปรไฟล์ Butter Cute Theme',
+                category: 'ของตกแต่งน่ารัก',
+                price: 59,
+                desc: 'ไฟล์ PNG ความละเอียดสูง สำหรับใส่กรอบรูป Discord, Facebook, IG คิวท์ๆ',
+                status: 'มีสินค้า',
+                icon: '🖼️',
+                image: null
+            },
+            {
+                id: 'prod-4',
+                title: 'Minecraft Premium Java & Bedrock Edition',
+                category: 'Minecraft',
+                price: 290,
+                desc: 'ไอดีแท้เปลี่ยนชื่อ เปลี่ยนสกิน เปลี่ยนเมลได้ 100% เล่นเซิร์ฟนอกได้ทุกเซิร์ฟเวอร์',
+                status: 'หมด',
+                icon: '🧱',
+                image: null
+            },
+            {
+                id: 'prod-5',
+                title: 'ชุดไอคอน ช็อกโกแลตหวานกรอบ Widget',
+                category: 'ของตกแต่งน่ารัก',
+                price: 89,
+                desc: 'ชุดแต่งหน้าจอ iOS / Android 60+ ไอคอน โทนช็อกโกแลตอบอุ่น',
+                status: 'ขายดี',
+                icon: '📱',
+                image: null
+            }
+        ];
+
+        const DEFAULT_REVIEWS = [
+            {
+                id: 'rev-1',
+                type: 'product',
+                productId: 'prod-1',
+                productTitle: 'Roblox Blox Fruits Lv. Max + ผลเผ่า V4',
+                userName: 'น้องมิวส์สายฟาร์ม',
+                rating: 5,
+                tags: ['ได้ไอดีชัวร์', 'แอดมินตอบไว', 'ตรงปก 100%'],
+                comment: 'ได้ไอดีไวมากกครับ กดปุ๊บแอดมินส่งรหัสให้ปั๊บ ลองเข้าดูแล้วตรงปกทุกอย่าง ดาบคู่ V4 มีจริง ไม่จกตา แนะนำร้านนี้เลยครับ 🍫✨',
+                photo: null,
+                date: '2026-09-28 14:20',
+                likes: 12,
+                adminHeart: true,
+                adminReply: 'ขอบคุณน้องมิวส์มากๆ นะค้าบ ขอให้สนุกกับการเก็บเลเวลน้า 🤎'
+            },
+            {
+                id: 'rev-2',
+                type: 'service',
+                productId: null,
+                productTitle: null,
+                userName: 'คุณแพรวพราว',
+                rating: 5,
+                tags: ['น่ารักเป็นกันเอง', 'แอดมินตอบไว'],
+                comment: 'แอดมินตอบแชทสุภาพและน่ารักมากค่ะ สอบถามเรื่องเปลี่ยนรหัสผ่านก็ช่วยสอนอย่างละเอียด ไม่หงุดหงิดเลย ประทับใจการดูแลลูกค้ามากๆ ค่ะ',
+                photo: null,
+                date: '2026-09-27 18:05',
+                likes: 8,
+                adminHeart: true,
+                adminReply: 'ยินดีให้บริการเสมอเลยค่า ยินดีต้อนรับสู่ครอบครัว Butter Cake นะคะ 🥰'
+            }
+        ];
+
+        let reviews = [];
+        let products = [];
+        let userLikedIds = [];
+        let currentMainTab = 'product-reviews';
+        let currentFormReviewType = 'product';
+        let currentSelectedRating = 5;
+        let selectedTags = [];
+        let currentPhotoBase64 = null;
+        let isAdminLoggedIn = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorageData();
+            initChocolateParticles();
+            applyStoreConfigToUI();
+            checkStoreOpeningStatus();
+            setInterval(checkStoreOpeningStatus, 60000);
+
+            isAdminLoggedIn = localStorage.getItem(LOCAL_STORAGE_ADMIN_KEY) === 'true';
+            updateAdminUI();
+
+            setRating(5);
+
+            renderProducts();
+            renderReviews();
+            updateStatsAndBadges();
+        });
+
+        function initStorageData() {
+            const storedConfig = localStorage.getItem(LOCAL_STORAGE_STORE_CONFIG_KEY);
+            if (storedConfig) {
+                try { storeConfig = JSON.parse(storedConfig); }
+                catch(e) { storeConfig = defaultStoreConfig; }
+            } else {
+                storeConfig = defaultStoreConfig;
+                localStorage.setItem(LOCAL_STORAGE_STORE_CONFIG_KEY, JSON.stringify(defaultStoreConfig));
+            }
+
+            const storedProducts = localStorage.getItem(LOCAL_STORAGE_PRODUCTS_KEY);
+            if (storedProducts) {
+                try { products = JSON.parse(storedProducts); } 
+                catch(e) { products = DEFAULT_PRODUCTS; }
+            } else {
+                products = DEFAULT_PRODUCTS;
+                localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+            }
+
+            const storedReviews = localStorage.getItem(LOCAL_STORAGE_REVIEWS_KEY);
+            if (storedReviews) {
+                try { reviews = JSON.parse(storedReviews); } 
+                catch(e) { reviews = DEFAULT_REVIEWS; }
+            } else {
+                reviews = DEFAULT_REVIEWS;
+                localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(DEFAULT_REVIEWS));
+            }
+
+            const storedLikes = localStorage.getItem(LOCAL_STORAGE_USER_LIKES_KEY);
+            if (storedLikes) {
+                try { userLikedIds = JSON.parse(storedLikes); } 
+                catch(e) { userLikedIds = []; }
+            }
+        }
+
+        function applyStoreConfigToUI() {
+            const logoImg = document.getElementById('headerLogoImg');
+            const lineText = document.getElementById('headerLineText');
+            const lineLink = document.getElementById('headerLineLink');
+            const fbLink = document.getElementById('headerFbLink');
+            const footerLineLink = document.getElementById('footerLineLink');
+            const footerLineIdText = document.getElementById('footerLineIdText');
+            const footerFbLink = document.getElementById('footerFbLink');
+
+            if (logoImg && storeConfig.logo) logoImg.src = storeConfig.logo;
+            if (lineText) lineText.innerText = `แอดไลน์ ${storeConfig.lineId || '@755jvmsc'}`;
+            if (lineLink) lineLink.href = storeConfig.lineLink || 'https://lin.ee/rrbLyYT';
+            if (fbLink) fbLink.href = storeConfig.fbLink || '#';
+            if (footerLineLink) footerLineLink.href = storeConfig.lineLink || 'https://lin.ee/rrbLyYT';
+            if (footerLineIdText) footerLineIdText.innerText = `LINE: ${storeConfig.lineId || '@755jvmsc'}`;
+            if (footerFbLink) footerFbLink.href = storeConfig.fbLink || '#';
+        }
+
+        function initChocolateParticles() {
+            const container = document.getElementById('chocolateParticles');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const chocoEmojis = ['🍫', '🤎', '🍫', '🍫', '🤎'];
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const el = document.createElement('div');
+                el.className = 'choco-particle';
+                el.innerText = chocoEmojis[Math.floor(Math.random() * chocoEmojis.length)];
+                
+                const size = Math.floor(Math.random() * 16) + 18;
+                const left = Math.random() * 95;
+                const duration = Math.random() * 12 + 10;
+                const delay = Math.random() * 10;
+
+                el.style.fontSize = `${size}px`;
+                el.style.left = `${left}%`;
+                el.style.animationDuration = `${duration}s`;
+                el.style.animationDelay = `${delay}s`;
+
+                container.appendChild(el);
+            }
+        }
+
+        function checkStoreOpeningStatus() {
+            const badge = document.getElementById('storeStatusBadge');
+            if (!badge) return;
+
+            let isOpen = false;
+            const mode = storeConfig.statusMode || 'auto';
+
+            if (mode === 'open') {
+                isOpen = true;
+            } else if (mode === 'closed') {
+                isOpen = false;
+            } else {
+                const now = new Date();
+                const currentMin = now.getHours() * 60 + now.getMinutes();
+                isOpen = (currentMin >= 690) || (currentMin < 90);
+            }
+
+            if (isOpen) {
+                badge.className = "mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm";
+                badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span> 🟢 ร้านเปิดอยู่ (11.30 - 01.30 น.)`;
+            } else {
+                badge.className = "mt-2.5 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shadow-sm";
+                badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 🔴 ร้านปิดบริการชั่วคราว (เปิด 11.30 - 01.30 น.)`;
+            }
+        }
+
+        function copyLineID() {
+            const lineId = storeConfig.lineId || '@755jvmsc';
+            const tempInput = document.createElement('input');
+            tempInput.value = lineId;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast(`📋 คัดลอก LINE ID ${lineId} แล้ว!`, 'success');
+            } catch (err) {
+                showToast(`LINE ID: ${lineId}`, 'info');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+
+            const tabBtnProducts = document.getElementById('tabBtnProducts');
+            const tabBtnProductReviews = document.getElementById('tabBtnProductReviews');
+            const tabBtnServiceReviews = document.getElementById('tabBtnServiceReviews');
+
+            const sectionProducts = document.getElementById('sectionProducts');
+            const sectionReviews = document.getElementById('sectionReviews');
+
+            const currentTabTitle = document.getElementById('currentTabTitle');
+            const currentTabDesc = document.getElementById('currentTabDesc');
+            const filterProductSelect = document.getElementById('filterProductSelect');
+
+            [tabBtnProducts, tabBtnProductReviews, tabBtnServiceReviews].forEach(btn => btn?.classList.remove('active'));
+
+            if (tab === 'products') {
+                tabBtnProducts.classList.add('active');
+                sectionProducts.classList.remove('hidden');
+                sectionReviews.classList.add('hidden');
+            } else if (tab === 'product-reviews') {
+                tabBtnProductReviews.classList.add('active');
+                sectionProducts.classList.add('hidden');
+                sectionReviews.classList.remove('hidden');
+
+                currentTabTitle.innerHTML = `<span>🍰</span> รีวิวสินค้า (Product Reviews)`;
+                currentTabDesc.innerText = `ความคิดเห็นจากลูกค้าเกี่ยวกับคุณภาพไอดีเกมและของตกแต่งน่ารัก`;
+                filterProductSelect.classList.remove('hidden');
+
+                renderReviews();
+            } else if (tab === 'service-reviews') {
+                tabBtnServiceReviews.classList.add('active');
+                sectionProducts.classList.add('hidden');
+                sectionReviews.classList.remove('hidden');
+
+                currentTabTitle.innerHTML = `<span>💬</span> รีวิวการบริการ (Service Reviews)`;
+                currentTabDesc.innerText = `รีวิวจากลูกค้าเกี่ยวกับความรวดเร็ว แอดมินตอบแชท และความประทับใจบริการ`;
+                filterProductSelect.classList.add('hidden');
+
+                renderReviews();
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const selectInForm = document.getElementById('formProductSelect');
+            const selectInFilter = document.getElementById('filterProductSelect');
+
+            if (!grid) return;
+            
+            const statusStyle = {
+                'มีสินค้า': { color: 'bg-emerald-100 text-emerald-700 border-emerald-300', icon: '🟢' },
+                'ขายดี': { color: 'bg-amber-100 text-amber-700 border-amber-300', icon: '🔥' },
+                'หมด': { color: 'bg-rose-100 text-rose-700 border-rose-300', icon: '🔴' }
+            };
+
+            grid.innerHTML = products.map(prod => {
+                const statusText = prod.status || 'มีสินค้า';
+                const s = statusStyle[statusText] || statusStyle['มีสินค้า'];
+                
+                const imageDisplayHtml = prod.image ? 
+                    `<div class="w-full h-40 rounded-xl overflow-hidden mb-3 border border-mint/40 bg-white">
+                        <img src="${prod.image}" alt="${prod.title}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300">
+                    </div>` : '';
+
+                return `
+                <div class="glass-card rounded-2xl p-5 shadow-md border border-mint/40 hover:border-mint transition-all flex flex-col justify-between group relative">
+                    
+                    ${isAdminLoggedIn ? `
+                        <button onclick="deleteProduct('${prod.id}')" class="absolute -top-3 -right-3 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-md hover:bg-rose-600 transition-all z-10 border-2 border-white" title="ลบสินค้า">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ` : ''}
+
+                    <div>
+                        ${imageDisplayHtml}
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-mint/30 text-darkchoco">
+                                ${prod.category}
+                            </span>
+                            <!-- ป้ายสถานะ (แอดมินคลิกเพื่อแก้ไขสถานะได้) -->
+                            <span onclick="${isAdminLoggedIn ? `editProductStatus('${prod.id}')` : ''}" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${s.color} ${isAdminLoggedIn ? 'cursor-pointer hover:opacity-80 shadow-sm' : ''}" title="${isAdminLoggedIn ? 'คลิกเพื่อเปลี่ยนสถานะสินค้า' : ''}">
+                                ${s.icon} ${statusText} ${isAdminLoggedIn ? '<i class="fa-solid fa-pen text-[9px] ml-1"></i>' : ''}
+                            </span>
+                        </div>
+                        <h3 class="text-base font-bold font-kanit text-darkchoco group-hover:text-mintdark transition-colors flex items-center gap-1.5">
+                            ${!prod.image ? `<span>${prod.icon || '🍫'}</span>` : ''}
+                            <span>${prod.title}</span>
+                        </h3>
+                        <p class="text-xs text-darkchocolight mt-2 leading-relaxed">
+                            ${prod.desc}
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-darkchocolight">ราคาเพียง</span>
+                            <div class="text-xl font-bold font-kanit text-darkchoco">฿${prod.price}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="filterReviewsByProduct('${prod.id}')" class="px-3 py-1.5 rounded-xl bg-mint/20 text-darkchoco text-xs font-semibold hover:bg-mint/40 transition-all">
+                                <i class="fa-regular fa-star mr-1"></i> ดูรีวิว
+                            </button>
+                            <a href="${storeConfig.lineLink || 'https://lin.ee/rrbLyYT'}" target="_blank" class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold transition-all ${statusText === 'หมด' ? 'bg-gray-400 pointer-events-none' : 'bg-darkchoco hover:bg-darkchocolight'}">
+                                ${statusText === 'หมด' ? 'หมดชั่วคราว' : 'สั่งซื้อ'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+
+            const optionsHtml = products.map(p => `<option value="${p.id}">${p.icon || '📦'} ${p.title} (฿${p.price})</option>`).join('');
+            
+            if (selectInForm) selectInForm.innerHTML = optionsHtml;
+            if (selectInFilter) selectInFilter.innerHTML = `<option value="ALL">📦 ทุกสินค้าในร้าน</option>` + optionsHtml;
+        }
+
+        // ระบบแก้ไขสถานะสินค้า (เฉพาะตอนเป็นแอดมิน)
+        function editProductStatus(productId) {
+            if (!isAdminLoggedIn) return;
+            const prod = products.find(p => p.id === productId);
+            if (!prod) return;
+
+            let choice = prompt(`แก้ไขสถานะสินค้า: "${prod.title}"\nกรอกตัวเลขเลือกสถานะใหม่:\n1 = 🟢 มีสินค้า\n2 = 🔥 ขายดี\n3 = 🔴 หมด`, "1");
+            
+            if (choice === "1") {
+                prod.status = "มีสินค้า";
+            } else if (choice === "2") {
+                prod.status = "ขายดี";
+            } else if (choice === "3") {
+                prod.status = "หมด";
+            } else if (choice !== null) {
+                showToast("กรุณาเลือก 1, 2 หรือ 3 เท่านั้น", "error");
+                return;
+            } else {
+                return;
+            }
+
+            localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(products));
+            renderProducts();
+            showToast("✏️ อัปเดตสถานะสินค้าเรียบร้อยแล้ว!", "success");
+        }
+        
+        function deleteProduct(productId) {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?')) {
+                products = products.filter(p => p.id !== productId);
+                localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(products));
+                renderProducts();
+                showToast('🗑️ ลบสินค้าเรียบร้อยแล้ว', 'info');
+            }
+        }
+
+        function filterReviewsByProduct(productId) {
+            switchMainTab('product-reviews');
+            const selectFilter = document.getElementById('filterProductSelect');
+            if (selectFilter) {
+                selectFilter.value = productId;
+                renderReviews();
+            }
+        }
+
+        function renderReviews() {
+            const grid = document.getElementById('reviewsGrid');
+            const emptyView = document.getElementById('emptyReviewsView');
+            if (!grid) return;
+
+            const starFilter = document.getElementById('filterStarSelect')?.value || 'ALL';
+            const productFilter = document.getElementById('filterProductSelect')?.value || 'ALL';
+            const searchText = (document.getElementById('filterSearchInput')?.value || '').toLowerCase().trim();
+
+            const targetType = (currentMainTab === 'product-reviews') ? 'product' : 'service';
+
+            let filtered = reviews.filter(r => r.type === targetType);
+
+            if (targetType === 'product' && productFilter !== 'ALL') {
+                filtered = filtered.filter(r => r.productId === productFilter);
+            }
+
+            if (starFilter !== 'ALL') {
+                const minStars = parseInt(starFilter, 10);
+                filtered = filtered.filter(r => r.rating >= minStars);
+            }
+
+            if (searchText !== '') {
+                filtered = filtered.filter(r => 
+                    r.userName.toLowerCase().includes(searchText) ||
+                    r.comment.toLowerCase().includes(searchText) ||
+                    (r.productTitle && r.productTitle.toLowerCase().includes(searchText)) ||
+                    (r.tags && r.tags.some(t => t.toLowerCase().includes(searchText)))
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyView?.classList.remove('hidden');
+                return;
+            } else {
+                emptyView?.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(rev => {
+                const isUserLiked = userLikedIds.includes(rev.id);
+
+                const starsHtml = Array.from({length: 5}, (_, i) => 
+                    `<i class="fa-solid fa-star ${i < rev.rating ? 'text-amber-400' : 'text-gray-300'} text-sm"></i>`
+                ).join('');
+
+                const tagsHtml = (rev.tags || []).map(t => 
+                    `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mint/20 text-darkchoco border border-mint/40">#${t}</span>`
+                ).join('');
+
+                const photoHtml = rev.photo ? 
+                    `<div class="mt-3">
+                        <img src="${rev.photo}" alt="Review evidence" class="max-h-48 rounded-xl border border-mint/40 object-cover shadow-sm">
+                    </div>` : '';
+
+                const adminReplyHtml = rev.adminReply ? 
+                    `<div class="mt-3 p-3 rounded-2xl bg-warmcream/90 border border-mint/40 text-xs relative">
+                        <div class="flex items-center gap-1.5 font-bold text-darkchoco mb-1">
+                            <span>🧁 เจ้าของร้าน Butter Cake ตอบกลับ:</span>
+                        </div>
+                        <p class="text-darkchocolight whitespace-pre-line">${rev.adminReply}</p>
+                    </div>` : '';
+
+                const adminHeartBadgeHtml = rev.adminHeart ? 
+                    `<div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-300 shadow-sm animate-pulse">
+                        <i class="fa-solid fa-heart text-rose-500"></i>
+                        <span>💖 เจ้าของร้านถูกใจสิ่งนี้</span>
+                    </div>` : '';
+
+                const adminControlsHtml = isAdminLoggedIn ? 
+                    `<div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-mint/20 bg-mint/10 -mx-5 -mb-5 p-3 rounded-b-2xl">
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleAdminHeart('${rev.id}')" class="text-xs px-2.5 py-1 rounded-lg ${rev.adminHeart ? 'bg-rose-500 text-white' : 'bg-rose-100 text-rose-700'} font-bold hover:opacity-90 transition-all">
+                                <i class="fa-solid fa-heart mr-1"></i> ${rev.adminHeart ? 'ถอนหัวใจเจ้าของร้าน' : 'กดใจในนามเจ้าของร้าน'}
+                            </button>
+                            <button onclick="openAdminReplyModal('${rev.id}', '${rev.userName}')" class="text-xs px-2.5 py-1 rounded-lg bg-darkchoco text-white font-bold hover:bg-darkchocolight transition-all">
+                                <i class="fa-solid fa-reply mr-1"></i> ตอบกลับ
+                            </button>
+                        </div>
+                        <button onclick="deleteReview('${rev.id}')" class="text-xs px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold hover:bg-rose-200">
+                            <i class="fa-solid fa-trash mr-1"></i> ลบ
+                        </button>
+                    </div>` : '';
+
+                return `
+                    <div class="glass-card rounded-2xl p-5 shadow-md border border-mint/30 flex flex-col justify-between hover:shadow-lg transition-all">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-mint to-mintdark text-white font-bold flex items-center justify-center text-sm shadow-sm">
+                                        ${rev.userName ? rev.userName.charAt(0).toUpperCase() : 'B'}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-darkchoco leading-tight">${rev.userName}</h4>
+                                        <span class="text-[11px] text-darkchocolight">${rev.date}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <div class="flex items-center gap-0.5">${starsHtml}</div>
+                                    <span class="text-[10px] font-bold text-mintdark mt-0.5">
+                                        ${rev.type === 'product' ? '🍰 รีวิวสินค้า' : '💬 รีวิวบริการ'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            ${rev.productTitle ? `
+                                <div class="mb-2 text-xs font-semibold px-2.5 py-1 rounded-xl bg-warmcream text-darkchoco inline-flex items-center gap-1 border border-mint/30">
+                                    <i class="fa-solid fa-bag-shopping text-mintdark"></i>
+                                    <span>${rev.productTitle}</span>
+                                </div>
+                            ` : ''}
+
+                            ${rev.tags && rev.tags.length > 0 ? `<div class="flex flex-wrap gap-1 mb-2">${tagsHtml}</div>` : ''}
+
+                            <p class="text-xs text-darkchoco leading-relaxed whitespace-pre-line mt-1">
+                                ${rev.comment}
+                            </p>
+
+                            ${photoHtml}
+                            ${adminHeartBadgeHtml}
+                            ${adminReplyHtml}
+                        </div>
+
+                        <div>
+                            <div class="mt-4 pt-3 border-t border-mint/20 flex items-center justify-between text-xs text-darkchocolight">
+                                <button onclick="toggleUserLike('${rev.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isUserLiked ? 'bg-rose-500 text-white' : 'bg-white/90 text-darkchoco hover:bg-softpink hover:text-rose-600'} transition-all border border-mint/40 font-semibold shadow-sm transform active:scale-95">
+                                    <i class="fa-solid fa-heart ${isUserLiked ? 'text-white' : 'text-rose-400'}"></i>
+                                    <span>${isUserLiked ? 'ถูกใจแล้ว' : 'ถูกใจ'} (${rev.likes || 0})</span>
+                                </button>
+                                <span class="text-[10px] text-darkchocolight/80">ยืนยันจากลูกค้าจริง</span>
+                            </div>
+
+                            ${adminControlsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleUserLike(reviewId) {
+            const rev = reviews.find(r => r.id === reviewId);
+            if (!rev) return;
+
+            const index = userLikedIds.indexOf(reviewId);
+            if (index > -1) {
+                userLikedIds.splice(index, 1);
+                rev.likes = Math.max(0, (rev.likes || 1) - 1);
+                showToast('🤍 ยกเลิกการถูกใจแล้ว', 'info');
+            } else {
+                userLikedIds.push(reviewId);
+                rev.likes = (rev.likes || 0) + 1;
+                showToast('💖 ถูกใจรีวิวนี้แล้ว!', 'success');
+            }
+
+            localStorage.setItem(LOCAL_STORAGE_USER_LIKES_KEY, JSON.stringify(userLikedIds));
+            localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+            renderReviews();
+        }
+
+        function toggleAdminHeart(reviewId) {
+            if (!isAdminLoggedIn) return;
+            const rev = reviews.find(r => r.id === reviewId);
+            if (!rev) return;
+
+            rev.adminHeart = !rev.adminHeart;
+            localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+            renderReviews();
+
+            if (rev.adminHeart) {
+                showToast('💖 เพิ่มป้าย "เจ้าของร้านถูกใจสิ่งนี้" แล้ว!', 'success');
+            } else {
+                showToast('ถอนหัวใจเจ้าของร้านเรียบร้อยแล้ว', 'info');
+            }
+        }
+
+        function updateStatsAndBadges() {
+            const total = reviews.length;
+            const productRevCount = reviews.filter(r => r.type === 'product').length;
+            const serviceRevCount = reviews.filter(r => r.type === 'service').length;
+
+            let sum = 0;
+            reviews.forEach(r => sum += r.rating);
+            const avg = total > 0 ? (sum / total).toFixed(1) : '5.0';
+
+            const statTotal = document.getElementById('statTotalReviews');
+            const statAvg = document.getElementById('statAvgRating');
+            const countProd = document.getElementById('countBadgeProductReviews');
+            const countServ = document.getElementById('countBadgeServiceReviews');
+
+            if (statTotal) statTotal.innerText = total;
+            if (statAvg) statAvg.innerText = avg;
+            if (countProd) countProd.innerText = productRevCount;
+            if (countServ) countServ.innerText = serviceRevCount;
+        }
+
+        function openWriteReviewModal() {
+            const modal = document.getElementById('modalWriteReview');
+            modal?.classList.remove('hidden');
+            setReviewTypeForm(currentMainTab === 'service-reviews' ? 'service' : 'product');
+        }
+
+        function closeWriteReviewModal() {
+            const modal = document.getElementById('modalWriteReview');
+            modal?.classList.add('hidden');
+            clearPhotoPreview();
+        }
+
+        function setReviewTypeForm(type) {
+            currentFormReviewType = type;
+            const btnProd = document.getElementById('typeBtnProduct');
+            const btnServ = document.getElementById('typeBtnService');
+            const prodGroup = document.getElementById('formProductSelectGroup');
+
+            if (type === 'product') {
+                btnProd.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5";
+                btnServ.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5";
+                prodGroup?.classList.remove('hidden');
+            } else {
+                btnServ.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all bg-darkchoco text-white shadow-sm flex items-center justify-center gap-1.5";
+                btnProd.className = "py-2 px-3 rounded-xl text-xs font-bold transition-all text-darkchocolight hover:text-darkchoco flex items-center justify-center gap-1.5";
+                prodGroup?.classList.add('hidden');
+            }
+        }
+
+        function setRating(rating) {
+            currentSelectedRating = rating;
+            const picker = document.getElementById('starPicker');
+            const starText = document.getElementById('starText');
+            if (!picker) return;
+
+            const stars = picker.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fa-solid fa-star text-amber-400';
+                } else {
+                    star.className = 'fa-solid fa-star text-gray-300';
+                }
+            });
+
+            const labels = [
+                '1.0 - ควรปรับปรุง 🥺',
+                '2.0 - พอใช้ได้ 😐',
+                '3.0 - ปานกลาง 🙂',
+                '4.0 - ดีเยี่ยม 😊',
+                '5.0 - ประทับใจมากที่สุด! ❤️'
+            ];
+            if (starText) starText.innerText = labels[rating - 1] || '5.0 - ดีเยี่ยม!';
+        }
+
+        function hoverStar(rating) {
+            const picker = document.getElementById('starPicker');
+            if (!picker) return;
+            const stars = picker.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('text-amber-400');
+                    star.classList.remove('text-gray-300');
+                } else {
+                    star.classList.remove('text-amber-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function toggleTag(btn, tagText) {
+            if (selectedTags.includes(tagText)) {
+                selectedTags = selectedTags.filter(t => t !== tagText);
+                btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium";
+            } else {
+                selectedTags.push(tagText);
+                btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-darkchoco bg-darkchoco text-white font-medium shadow-sm";
+            }
+        }
+
+        function previewReviewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                currentPhotoBase64 = e.target.result;
+                const img = document.getElementById('photoPreview');
+                const container = document.getElementById('photoPreviewContainer');
+                if (img && container) {
+                    img.src = currentPhotoBase64;
+                    container.classList.remove('hidden');
+                }
+            };
+        }
+
+        function clearPhotoPreview() {
+            currentPhotoBase64 = null;
+            const input = document.getElementById('formPhotoInput');
+            const container = document.getElementById('photoPreviewContainer');
+            if (input) input.value = '';
+            if (container) container.classList.add('hidden');
+        }
+
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('formName');
+            const commentInput = document.getElementById('formComment');
+            const productSelect = document.getElementById('formProductSelect');
+
+            const userName = nameInput.value.trim();
+            const comment = commentInput.value.trim();
+
+            if (!userName || !comment) {
+                showToast('กรุณากรอกชื่อและข้อความรีวิวให้ครบถ้วน', 'error');
+                return;
+            }
+
+            let productId = null;
+            let productTitle = null;
+
+            if (currentFormReviewType === 'product') {
+                productId = productSelect.value;
+                const pObj = products.find(p => p.id === productId);
+                productTitle = pObj ? pObj.title : 'สินค้า Butter Cake';
+            }
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const newReview = {
+                id: 'rev-' + Date.now(),
+                type: currentFormReviewType,
+                productId: productId,
+                productTitle: productTitle,
+                userName: userName,
+                rating: currentSelectedRating,
+                tags: [...selectedTags],
+                comment: comment,
+                photo: currentPhotoBase64,
+                date: dateStr,
+                likes: 0,
+                adminHeart: false,
+                adminReply: null
+            };
+
+            reviews.unshift(newReview);
+            try {
+                localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+            } catch (err) {
+                newReview.photo = null;
+                localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+            }
+
+            closeWriteReviewModal();
+            
+            if (currentFormReviewType === 'product') {
+                switchMainTab('product-reviews');
+            } else {
+                switchMainTab('service-reviews');
+            }
+
+            updateStatsAndBadges();
+            showToast('🎉 ขอบคุณสำหรับรีวิวความประทับใจนะคะ!', 'success');
+
+            nameInput.value = '';
+            commentInput.value = '';
+            selectedTags = [];
+            currentPhotoBase64 = null;
+            document.querySelectorAll('.tag-chip').forEach(btn => {
+                btn.className = "tag-chip text-[11px] px-2.5 py-1 rounded-lg border border-mint/60 bg-white text-darkchoco font-medium";
+            });
+        }
+
+        function openAdminModal() {
+            document.getElementById('modalAdminLogin')?.classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('modalAdminLogin')?.classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value.trim();
+
+            if (u === 'admin' && p === 'Ke135687') {
+                isAdminLoggedIn = true;
+                localStorage.setItem(LOCAL_STORAGE_ADMIN_KEY, 'true');
+                closeAdminModal();
+                updateAdminUI();
+                renderProducts();
+                renderReviews();
+                showToast('🔑 เข้าสู่ระบบแอดมินสำเร็จ!', 'success');
+                document.getElementById('adminUser').value = '';
+                document.getElementById('adminPass').value = '';
+            } else {
+                showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+            }
+        }
+        
+        function openAdminSettingsModal() {
+            document.getElementById('settingLineId').value = storeConfig.lineId || '@755jvmsc';
+            document.getElementById('settingLineLink').value = storeConfig.lineLink || 'https://lin.ee/rrbLyYT';
+            document.getElementById('settingFbLink').value = storeConfig.fbLink || 'https://www.facebook.com/share/1Eoo8p4Dn5/?mibextid=wwXIfr';
+            document.getElementById('settingStatusMode').value = storeConfig.statusMode || 'auto';
+
+            document.getElementById('modalAdminSettings')?.classList.remove('hidden');
+        }
+
+        function closeAdminSettingsModal() {
+            document.getElementById('modalAdminSettings')?.classList.add('hidden');
+        }
+
+        function handleSaveStoreSettings(e) {
+            e.preventDefault();
+            const lineId = document.getElementById('settingLineId').value.trim();
+            const lineLink = document.getElementById('settingLineLink').value.trim();
+            const fbLink = document.getElementById('settingFbLink').value.trim();
+            const statusMode = document.getElementById('settingStatusMode').value;
+            const logoInput = document.getElementById('settingLogoInput');
+
+            storeConfig.lineId = lineId;
+            storeConfig.lineLink = lineLink;
+            storeConfig.fbLink = fbLink;
+            storeConfig.statusMode = statusMode;
+
+            if (logoInput.files && logoInput.files[0]) {
+                const reader = new FileReader();
+                reader.readAsDataURL(logoInput.files[0]);
+                reader.onload = (event) => {
+                    storeConfig.logo = event.target.result;
+                    saveAndApplyStoreConfig();
+                };
+            } else {
+                saveAndApplyStoreConfig();
+            }
+        }
+
+        function saveAndApplyStoreConfig() {
+            localStorage.setItem(LOCAL_STORAGE_STORE_CONFIG_KEY, JSON.stringify(storeConfig));
+            applyStoreConfigToUI();
+            checkStoreOpeningStatus();
+            renderProducts();
+            closeAdminSettingsModal();
+            showToast('💾 บันทึกการตั้งค่าร้านค้าเรียบร้อยแล้ว!', 'success');
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            localStorage.setItem(LOCAL_STORAGE_ADMIN_KEY, 'false');
+            closeAdminSettingsModal();
+            updateAdminUI();
+            renderProducts();
+            renderReviews();
+            showToast('ออกจากระบบแอดมินแล้ว', 'info');
+        }
+
+        function updateAdminUI() {
+            const navBtn = document.getElementById('adminNavBtn');
+            const btnSettings = document.getElementById('btnAdminSettings');
+
+            if (isAdminLoggedIn) {
+                if (navBtn) navBtn.classList.add('hidden');
+                if (btnSettings) btnSettings.classList.remove('hidden');
+            } else {
+                if (navBtn) navBtn.classList.remove('hidden');
+                if (btnSettings) btnSettings.classList.add('hidden');
+            }
+        }
+
+        function openAdminReplyModal(reviewId, userName) {
+            const modal = document.getElementById('modalAdminReply');
+            const inputId = document.getElementById('replyReviewId');
+            const targetText = document.getElementById('replyModalTargetUser');
+            if (!modal) return;
+
+            inputId.value = reviewId;
+            targetText.innerText = `ตอบกลับคุณ: ${userName}`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeAdminReplyModal() {
+            document.getElementById('modalAdminReply')?.classList.add('hidden');
+        }
+
+        function handleAdminReplySubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('replyReviewId').value;
+            const replyMsg = document.getElementById('adminReplyText').value.trim();
+
+            const rev = reviews.find(r => r.id === id);
+            if (rev && replyMsg) {
+                rev.adminReply = replyMsg;
+                localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+                closeAdminReplyModal();
+                document.getElementById('adminReplyText').value = '';
+                renderReviews();
+                showToast('🧁 บันทึกการตอบกลับจากเจ้าของร้านแล้ว!', 'success');
+            }
+        }
+
+        function deleteReview(reviewId) {
+            reviews = reviews.filter(r => r.id !== reviewId);
+            localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(reviews));
+            renderReviews();
+            updateStatsAndBadges();
+            showToast('🗑️ ลบรีวิวเรียบร้อยแล้ว', 'info');
+        }
+
+        function openAddProductModal() {
+            document.getElementById('modalAddProduct')?.classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('modalAddProduct')?.classList.add('hidden');
+        }
+
+        function handleAddProductSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('newProdTitle').value.trim();
+            const cat = document.getElementById('newProdCategory').value;
+            const price = parseFloat(document.getElementById('newProdPrice').value);
+            const desc = document.getElementById('newProdDesc').value.trim();
+            const status = document.getElementById('newProdStatus').value;
+            const imgInput = document.getElementById('newProdImageInput');
+
+            if (!title || !price) return;
+
+            const createNewProdObj = (imgBase64) => {
+                const newProd = {
+                    id: 'prod-' + Date.now(),
+                    title: title,
+                    category: cat,
+                    price: price,
+                    desc: desc || 'สินค้าคุณภาพจาก Butter Cake',
+                    status: status,
+                    icon: '🎁',
+                    image: imgBase64 || null
+                };
+
+                products.unshift(newProd);
+                localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(products));
+
+                closeAddProductModal();
+                renderProducts();
+                showToast('➕ เพิ่มสินค้าใหม่พร้อมรูปภาพเรียบร้อย!', 'success');
+                e.target.reset();
+            };
+
+            if (imgInput.files && imgInput.files[0]) {
+                const reader = new FileReader();
+                reader.readAsDataURL(imgInput.files[0]);
+                reader.onload = (event) => {
+                    createNewProdObj(event.target.result);
+                };
+            } else {
+                createNewProdObj(null);
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let bgClass = "bg-darkchoco text-white";
+            if (type === 'success') bgClass = "bg-emerald-600 text-white";
+            if (type === 'error') bgClass = "bg-rose-600 text-white";
+
+            toast.className = `px-4 py-2.5 rounded-2xl shadow-xl font-medium text-xs flex items-center gap-2 border border-white/20 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
