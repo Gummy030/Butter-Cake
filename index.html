@@ -1502,16 +1502,17 @@
             return true;
         }
 
-        async function likeReviewInDatabase(id) {
+        async function setReviewLikeInDatabase(id, liked) {
             if (!ensureSupabase()) return null;
 
-            const { data, error } = await supabaseClient.rpc('increment_review_likes', {
-                row_id: id
+            const { data, error } = await supabaseClient.rpc('toggle_review_like', {
+                row_id: id,
+                liked
             });
 
             if (error) {
-                console.error('increment_review_likes error:', error);
-                customAlert('กดถูกใจไม่สำเร็จ: ' + error.message);
+                console.error('toggle_review_like error:', error);
+                customAlert((liked ? 'กดถูกใจ' : 'ยกเลิกถูกใจ') + 'ไม่สำเร็จ: ' + error.message);
                 return null;
             }
 
@@ -1812,19 +1813,23 @@
             const review = reviews.find(r => r.id === id);
             if (!review) return;
 
-            // ป้องกันการกดซ้ำจากเบราว์เซอร์เดิม
-            if (review.isLiked) return;
-
-            const newCount = await likeReviewInDatabase(id);
+            // สลับสถานะ: กดครั้งแรก = เพิ่มหัวใจ, กดอีกครั้ง = เอาหัวใจออก
+            const nextLiked = !review.isLiked;
+            const newCount = await setReviewLikeInDatabase(id, nextLiked);
             if (newCount === null) return;
 
-            review.likes = Number.isFinite(newCount) ? newCount : review.likes + 1;
-            review.isLiked = true;
-            localStorage.setItem(`review_liked_${id}`, '1');
+            review.likes = Math.max(0, Number(newCount));
+            review.isLiked = nextLiked;
+
+            if (nextLiked) {
+                localStorage.setItem(`review_liked_${id}`, '1');
+            } else {
+                localStorage.removeItem(`review_liked_${id}`);
+            }
 
             if (isAdmin) {
-                const adminLikeSaved = await markAdminLikedInDatabase(id, true);
-                if (adminLikeSaved) review.adminLiked = true;
+                const adminLikeSaved = await markAdminLikedInDatabase(id, nextLiked);
+                if (adminLikeSaved) review.adminLiked = nextLiked;
             }
 
             const countEl = document.getElementById(`like-count-${id}`);
@@ -1832,11 +1837,20 @@
             const adminBadgeEl = document.getElementById(`admin-like-badge-${id}`);
 
             if (countEl) countEl.innerText = review.likes;
-            if (iconEl) iconEl.className = 'fas fa-heart text-[var(--pink3)]';
+            if (iconEl) {
+                iconEl.className = review.isLiked
+                    ? 'fas fa-heart text-[var(--pink3)]'
+                    : 'fas fa-heart text-gray-300';
+            }
 
-            if (adminBadgeEl && review.adminLiked) {
-                adminBadgeEl.classList.remove('hidden');
-                adminBadgeEl.classList.add('flex');
+            if (adminBadgeEl) {
+                if (review.adminLiked) {
+                    adminBadgeEl.classList.remove('hidden');
+                    adminBadgeEl.classList.add('flex');
+                } else {
+                    adminBadgeEl.classList.add('hidden');
+                    adminBadgeEl.classList.remove('flex');
+                }
             }
         }
 
