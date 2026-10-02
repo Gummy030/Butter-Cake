@@ -609,17 +609,17 @@
     <script>
         // ============================================================
         // SUPABASE CONFIG
-        // นำค่า Project URL และ anon/public key จาก Supabase มาใส่ตรงนี้
+        // นำค่า Project URL และ Publishable key จาก Supabase มาใส่ตรงนี้
         // ============================================================
         const SUPABASE_URL = 'https://mpqdwpfqsmskvfgmzxna.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiLCJyZWYiOiJtcHFkd3BmcXFtczNrdmZnbXp4bmEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc5MDk0NTQ2NywiZXhwIjoyMTA2NTIxNDY3fQ.8Ld5u-DPyOF9lxTU6RkW3tPRA3k_kQeZ8aeYvv_k8cA';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_60yx2bfStIoIqnnzDkQwPQ_Tjn_kYqE';
 
         const supabaseConfigured =
             SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
-            SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+            SUPABASE_PUBLISHABLE_KEY !== 'YOUR_SUPABASE_PUBLISHABLE_KEY';
 
         const supabaseClient = supabaseConfigured
-            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
             : null;
 
         let isAdmin = false;
@@ -1041,7 +1041,7 @@
 
         async function attemptAdminLogin() {
             if (!supabaseConfigured) {
-                customAlert('กรุณาใส่ SUPABASE_URL และ SUPABASE_ANON_KEY ในไฟล์ก่อนค่ะ');
+                customAlert('กรุณาใส่ SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ในไฟล์ก่อนค่ะ');
                 return;
             }
 
@@ -1783,7 +1783,7 @@
             renderDecoImage();
 
             if (!supabaseConfigured) {
-                console.warn('Supabase ยังไม่ได้ตั้งค่า: กรุณาแก้ SUPABASE_URL และ SUPABASE_ANON_KEY');
+                console.warn('Supabase ยังไม่ได้ตั้งค่า: กรุณาแก้ SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY');
             } else {
                 await checkAdminSession();
                 await loadStoreSettings();
