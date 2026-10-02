@@ -640,7 +640,13 @@
             musicUrl: "https://assets.mixkit.co/active_storage/sfx/135/135-preview.mp3",
             decoImage: "https://placehold.co/1200x400/fee0e9/6e513b?text=✨+Decoration+Banner+✨",
             decoImageTop: "https://placehold.co/600x200/c7dd9d/6e513b?text=✨+Header+Decoration+✨",
-            effectImage: "https://placehold.co/120x120/c7dd9d/6e513b?text=🍀"
+            effectImage: "https://placehold.co/120x120/c7dd9d/6e513b?text=🍀",
+            themePink1: "#fee0e9",
+            themePink2: "#fff1f6",
+            themePink3: "#f5c9d4",
+            themeGreen1: "#c7dd9d",
+            themeGreen2: "#8da65c",
+            themeBrown: "#6e513b"
         };
 
         const themePresets = {
@@ -1131,12 +1137,26 @@
             }
         }
 
-        function saveCustomThemeColors() {
+        function applyThemeColors() {
             const root = document.documentElement;
-            root.style.setProperty('--pink2', document.getElementById('picker-pink2').value);
-            root.style.setProperty('--pink3', document.getElementById('picker-pink3').value);
-            root.style.setProperty('--green2', document.getElementById('picker-green2').value);
-            root.style.setProperty('--brown', document.getElementById('picker-brown').value);
+            root.style.setProperty('--pink1', storeData.themePink1);
+            root.style.setProperty('--pink2', storeData.themePink2);
+            root.style.setProperty('--pink3', storeData.themePink3);
+            root.style.setProperty('--green1', storeData.themeGreen1);
+            root.style.setProperty('--green2', storeData.themeGreen2);
+            root.style.setProperty('--brown', storeData.themeBrown);
+        }
+
+        async function saveCustomThemeColors() {
+            storeData.themePink1 = storeData.themePink1;
+            storeData.themePink2 = document.getElementById('picker-pink2').value;
+            storeData.themePink3 = document.getElementById('picker-pink3').value;
+            storeData.themeGreen1 = storeData.themeGreen1;
+            storeData.themeGreen2 = document.getElementById('picker-green2').value;
+            storeData.themeBrown = document.getElementById('picker-brown').value;
+            applyThemeColors();
+            const ok = await saveStoreSettings();
+            if (!ok) return;
             closeModal('editThemeModal');
             customAlert('ปรับแต่งโทนสีของเว็บไซต์เรียบร้อยแล้ว 🎨');
         }
@@ -1226,7 +1246,13 @@
                 musicUrl: row.music_url ?? storeData.musicUrl,
                 decoImage: row.deco_image ?? storeData.decoImage,
                 decoImageTop: row.deco_image_top ?? storeData.decoImageTop,
-                effectImage: row.effect_image ?? storeData.effectImage
+                effectImage: row.effect_image ?? storeData.effectImage,
+                themePink1: row.theme_pink1 ?? storeData.themePink1,
+                themePink2: row.theme_pink2 ?? storeData.themePink2,
+                themePink3: row.theme_pink3 ?? storeData.themePink3,
+                themeGreen1: row.theme_green1 ?? storeData.themeGreen1,
+                themeGreen2: row.theme_green2 ?? storeData.themeGreen2,
+                themeBrown: row.theme_brown ?? storeData.themeBrown
             };
         }
 
@@ -1264,9 +1290,11 @@
 
             if (data) {
                 mapStoreRow(data);
+                applyThemeColors();
                 renderStoreInfo();
                 renderDecoTopImage();
                 renderDecoImage();
+                checkMusicSource(storeData.musicUrl, false);
             } else if (isAdmin) {
                 const { data: created, error: createError } = await supabaseClient
                     .from('store_settings')
@@ -1282,16 +1310,24 @@
                         music_url: storeData.musicUrl,
                         deco_image: storeData.decoImage,
                         deco_image_top: storeData.decoImageTop,
-                        effect_image: storeData.effectImage
+                        effect_image: storeData.effectImage,
+                        theme_pink1: storeData.themePink1,
+                        theme_pink2: storeData.themePink2,
+                        theme_pink3: storeData.themePink3,
+                        theme_green1: storeData.themeGreen1,
+                        theme_green2: storeData.themeGreen2,
+                        theme_brown: storeData.themeBrown
                     })
                     .select()
                     .single();
 
                 if (!createError && created) {
                     mapStoreRow(created);
+                    applyThemeColors();
                     renderStoreInfo();
                     renderDecoTopImage();
                     renderDecoImage();
+                    checkMusicSource(storeData.musicUrl, false);
                 }
             }
         }
@@ -1311,7 +1347,13 @@
                 music_url: storeData.musicUrl,
                 deco_image: storeData.decoImage,
                 deco_image_top: storeData.decoImageTop,
-                effect_image: storeData.effectImage
+                effect_image: storeData.effectImage,
+                theme_pink1: storeData.themePink1,
+                theme_pink2: storeData.themePink2,
+                theme_pink3: storeData.themePink3,
+                theme_green1: storeData.themeGreen1,
+                theme_green2: storeData.themeGreen2,
+                theme_brown: storeData.themeBrown
             };
 
             const { data: existing } = await supabaseClient
