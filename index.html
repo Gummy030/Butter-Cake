@@ -1122,6 +1122,13 @@
         function applyColorPreset(presetKey) {
             const preset = themePresets[presetKey];
             if (preset) {
+                storeData.themePink1 = preset.pink1;
+                storeData.themePink2 = preset.pink2;
+                storeData.themePink3 = preset.pink3;
+                storeData.themeGreen1 = preset.green1;
+                storeData.themeGreen2 = preset.green2;
+                storeData.themeBrown = preset.brown;
+
                 const root = document.documentElement;
                 root.style.setProperty('--pink1', preset.pink1);
                 root.style.setProperty('--pink2', preset.pink2);
@@ -1129,7 +1136,7 @@
                 root.style.setProperty('--green1', preset.green1);
                 root.style.setProperty('--green2', preset.green2);
                 root.style.setProperty('--brown', preset.brown);
-                
+
                 document.getElementById('picker-pink2').value = preset.pink2;
                 document.getElementById('picker-pink3').value = preset.pink3;
                 document.getElementById('picker-green2').value = preset.green2;
@@ -1148,12 +1155,16 @@
         }
 
         async function saveCustomThemeColors() {
-            storeData.themePink1 = storeData.themePink1;
+            const root = document.documentElement;
+            const computed = getComputedStyle(root);
+
+            storeData.themePink1 = computed.getPropertyValue('--pink1').trim() || storeData.themePink1;
             storeData.themePink2 = document.getElementById('picker-pink2').value;
             storeData.themePink3 = document.getElementById('picker-pink3').value;
-            storeData.themeGreen1 = storeData.themeGreen1;
+            storeData.themeGreen1 = computed.getPropertyValue('--green1').trim() || storeData.themeGreen1;
             storeData.themeGreen2 = document.getElementById('picker-green2').value;
             storeData.themeBrown = document.getElementById('picker-brown').value;
+
             applyThemeColors();
             const ok = await saveStoreSettings();
             if (!ok) return;
@@ -1222,6 +1233,7 @@
         // ============================================================
         // SUPABASE DATABASE FUNCTIONS
         // ============================================================
+        // Version: Supabase shared settings + UUID-safe likes/replies
 
         function ensureSupabase() {
             if (!supabaseConfigured || !supabaseClient) {
@@ -1503,7 +1515,8 @@
                 return null;
             }
 
-            return Number(data);
+            const count = Number(data);
+            return Number.isFinite(count) ? count : null;
         }
 
         async function markAdminLikedInDatabase(id, liked = true) {
@@ -1747,10 +1760,10 @@
 
                 const adminControlsHtml = `
                     <div class="admin-controls hidden gap-2 mt-3 pt-3 border-t border-[var(--pink1)] justify-end w-full">
-                        <button onclick="replyToReview(${review.id})" class="text-xs bg-[var(--green2)] text-white px-3 py-1.5 rounded-xl hover:opacity-90 transition flex items-center gap-1 shadow-2xs">
+                        <button onclick='replyToReview(${JSON.stringify(review.id)})' class="text-xs bg-[var(--green2)] text-white px-3 py-1.5 rounded-xl hover:opacity-90 transition flex items-center gap-1 shadow-2xs">
                             <i class="fas fa-reply"></i> ตอบกลับ
                         </button>
-                        <button onclick="deleteReview(${review.id})" class="text-xs bg-[var(--pink3)] text-white px-3 py-1.5 rounded-xl hover:bg-red-400 transition flex items-center gap-1 shadow-2xs">
+                        <button onclick='deleteReview(${JSON.stringify(review.id)})' class="text-xs bg-[var(--pink3)] text-white px-3 py-1.5 rounded-xl hover:bg-red-400 transition flex items-center gap-1 shadow-2xs">
                             <i class="fas fa-trash-alt"></i> ลบรีวิว
                         </button>
                     </div>
@@ -1782,7 +1795,7 @@
                         ${replyHtml}
 
                         <div class="mt-3 flex flex-wrap items-center gap-2 pt-2">
-                            <button onclick="likeReview(${review.id})" class="text-xs text-[var(--brown)]/70 hover:text-[var(--pink3)] transition flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-2xs font-medium border border-[var(--pink1)]/40 active:scale-95">
+                            <button onclick='likeReview(${JSON.stringify(review.id)})' class="text-xs text-[var(--brown)]/70 hover:text-[var(--pink3)] transition flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-2xs font-medium border border-[var(--pink1)]/40 active:scale-95">
                                 <i id="like-icon-${review.id}" class="${heartIconClass}"></i> 
                                 ถูกใจ (<span id="like-count-${review.id}">${review.likes}</span>)
                             </button>
@@ -1884,17 +1897,7 @@
             } else {
                 setTimeout(() => {
                     if (!isPlaying) {
-                        const audio = document.getElementById('bgmAudio');
-                        audio.play().then(() => {
-                            isPlaying = true;
-                            updatePlayUI(true);
-                        }).catch(() => {
-                            document.addEventListener('click', function autoPlayOnClick() {
-                                if (!isPlaying && localStorage.getItem('jaidee_music_state') !== 'off') {
-                                    toggleBGM();
-                                }
-                            }, { once: true });
-                        });
+                        checkMusicSource(storeData.musicUrl, true);
                     }
                 }, 500);
             }
