@@ -1491,18 +1491,53 @@
         }
 
         async function likeReviewInDatabase(id) {
-            if (!ensureSupabase()) return false;
+            if (!ensureSupabase()) return null;
 
-            const { error } = await supabaseClient.rpc('increment_review_likes', {
+            const { data, error } = await supabaseClient.rpc('increment_review_likes', {
                 row_id: id
             });
 
             if (error) {
-                console.error(error);
+                console.error('increment_review_likes error:', error);
                 customAlert('กดถูกใจไม่สำเร็จ: ' + error.message);
+                return null;
+            }
+
+            return Number(data);
+        }
+
+        async function markAdminLikedInDatabase(id, liked = true) {
+            if (!ensureSupabase() || !isAdmin) return false;
+
+            const { error } = await supabaseClient.rpc('set_review_admin_liked', {
+                row_id: id,
+                liked
+            });
+
+            if (error) {
+                console.error('set_review_admin_liked error:', error);
+                customAlert('บันทึกสถานะถูกใจของร้านค้าไม่สำเร็จ: ' + error.message);
                 return false;
             }
+
             return true;
+        }
+
+        async function saveReplyInDatabase(id, replyText) {
+            if (!ensureSupabase() || !isAdmin) return false;
+
+            const { data, error } = await supabaseClient.rpc('set_review_reply', {
+                row_id: id,
+                new_reply: replyText || ''
+            });
+
+            if (error) {
+                console.error('set_review_reply error:', error);
+                customAlert('ตอบกลับรีวิวไม่สำเร็จ: ' + error.message);
+                return false;
+            }
+
+            return data ?? '';
         }
 
         function renderStoreInfo() {
@@ -1767,16 +1802,16 @@
             // ป้องกันการกดซ้ำจากเบราว์เซอร์เดิม
             if (review.isLiked) return;
 
-            const ok = await likeReviewInDatabase(id);
-            if (!ok) return;
+            const newCount = await likeReviewInDatabase(id);
+            if (newCount === null) return;
 
-            review.likes += 1;
+            review.likes = Number.isFinite(newCount) ? newCount : review.likes + 1;
             review.isLiked = true;
             localStorage.setItem(`review_liked_${id}`, '1');
 
             if (isAdmin) {
-                review.adminLiked = true;
-                await updateReviewInDatabase(id, { admin_liked: true });
+                const adminLikeSaved = await markAdminLikedInDatabase(id, true);
+                if (adminLikeSaved) review.adminLiked = true;
             }
 
             const countEl = document.getElementById(`like-count-${id}`);
@@ -1796,9 +1831,9 @@
             const review = reviews.find(r => r.id === id);
             if (review) {
                 customPrompt("ตอบกลับรีวิวลูกค้า", review.reply || "", async (replyText) => {
-                    review.reply = replyText;
-                    const ok = await updateReviewInDatabase(id, { reply: replyText });
-                    if (!ok) return;
+                    const savedReply = await saveReplyInDatabase(id, replyText);
+                    if (savedReply === false) return;
+                    review.reply = savedReply;
                     renderReviews();
                     customAlert("บันทึกการตอบกลับเรียบร้อยแล้วค่ะ");
                 }, true);
