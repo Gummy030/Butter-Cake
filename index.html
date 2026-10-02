@@ -603,7 +603,25 @@
         </div>
     </div>
 
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
+        // ============================================================
+        // SUPABASE CONFIG
+        // นำค่า Project URL และ anon/public key จาก Supabase มาใส่ตรงนี้
+        // ============================================================
+        const SUPABASE_URL = 'https://mpqdwpfqsmskvfgmzxna.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiLCJyZWYiOiJtcHFkd3BmcXFtczNrdmZnbXp4bmEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc5MDk0NTQ2NywiZXhwIjoyMTA2NTIxNDY3fQ.8Ld5u-DPyOF9lxTU6RkW3tPRA3k_kQeZ8aeYvv_k8cA';
+
+        const supabaseConfigured =
+            SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
+            SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+
+        const supabaseClient = supabaseConfigured
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
         let isAdmin = false;
         let isPlaying = false;
         let currentUploadedImageData = null;
@@ -630,21 +648,7 @@
             matcha: { pink1: '#d8f3dc', pink2: '#f1faee', pink3: '#a8ded0', green1: '#b7e4c7', green2: '#52b788', brown: '#2d3142' }
         };
 
-        let reviews = [
-            {
-                id: 1,
-                name: "คุณสมชาย ม.",
-                rating: 5,
-                type: "good",
-                text: "แม่ค้าน่ารักมาก พูดจาดี ส่งของไวมากครับ แพ็คสินค้ามาอย่างดีเยี่ยมเลย ประทับใจสุดๆ!",
-                img: null,
-                date: new Date(Date.now() - 86400000).toISOString(),
-                likes: 12,
-                isLiked: false,
-                adminLiked: true,
-                reply: "ขอบคุณมากค่า ยินดีให้บริการเสมอนะคะ 💖"
-            }
-        ];
+        let reviews = [];
 
         /* --- ระบบเอฟเฟกต์ลอยพื้นหลัง (ลอยขึ้นจนสุดและมาเรื่อยๆ ไม่หนาแน่น) --- */
         function createFloatingElement() {
@@ -692,12 +696,14 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     storeData.effectImage = e.target.result;
+                    saveStoreSettings();
                     closeModal('editEffectModal');
                     customAlert('เปลี่ยนรูปภาพเอฟเฟกต์ลอยพื้นหลังเรียบร้อยแล้วค่ะ ✨');
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else if (url) {
                 storeData.effectImage = url;
+                saveStoreSettings();
                 closeModal('editEffectModal');
                 customAlert('เปลี่ยนรูปภาพเอฟเฟกต์ลอยพื้นหลังเรียบร้อยแล้วค่ะ ✨');
             } else {
@@ -874,6 +880,7 @@
             const newUrl = document.getElementById('musicUrlInput').value.trim();
             if (newUrl) {
                 storeData.musicUrl = newUrl;
+                saveStoreSettings();
                 closeModal('editMusicModal');
                 localStorage.setItem('jaidee_music_state', 'on');
                 checkMusicSource(newUrl, true);
@@ -898,6 +905,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     storeData.decoImageTop = e.target.result;
+                    saveStoreSettings();
                     renderDecoTopImage();
                     closeModal('decoTopImageModal');
                     customAlert('เปลี่ยนรูปภาพตกแต่งโซนเวลาเรียบร้อยแล้วค่ะ ✨');
@@ -905,6 +913,7 @@
                 reader.readAsDataURL(fileInput.files[0]);
             } else if (url) {
                 storeData.decoImageTop = url;
+                saveStoreSettings();
                 renderDecoTopImage();
                 closeModal('decoTopImageModal');
                 customAlert('เปลี่ยนรูปภาพตกแต่งโซนเวลาเรียบร้อยแล้วค่ะ ✨');
@@ -930,6 +939,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     storeData.decoImage = e.target.result;
+                    saveStoreSettings();
                     renderDecoImage();
                     closeModal('decoImageModal');
                     customAlert('เปลี่ยนรูปภาพตกแต่งคั่นกลางเรียบร้อยแล้วค่ะ ✨');
@@ -937,6 +947,7 @@
                 reader.readAsDataURL(fileInput.files[0]);
             } else if (url) {
                 storeData.decoImage = url;
+                saveStoreSettings();
                 renderDecoImage();
                 closeModal('decoImageModal');
                 customAlert('เปลี่ยนรูปภาพตกแต่งคั่นกลางเรียบร้อยแล้วค่ะ ✨');
@@ -1028,21 +1039,63 @@
 
         function closeAdminLogin() { closeModal('adminLoginModal'); }
 
-        function attemptAdminLogin() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const pass = document.getElementById('adminPassword').value.trim();
-
-            if (email === 'admin@store.com' && pass === '123456') {
-                isAdmin = true;
-                closeAdminLogin();
-                document.body.classList.add('admin-mode');
-                document.getElementById('adminBadge').classList.remove('hidden');
-                document.getElementById('adminToggleText').innerText = 'ออกจากระบบแอดมิน';
-                document.getElementById('adminToggleIcon').className = 'fas fa-sign-out-alt';
-                customAlert('เข้าสู่โหมดแอดมินสำเร็จ! คุณสามารถจัดการข้อมูลร้านและรีวิวได้แล้ว 🛠️');
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
+        async function attemptAdminLogin() {
+            if (!supabaseConfigured) {
+                customAlert('กรุณาใส่ SUPABASE_URL และ SUPABASE_ANON_KEY ในไฟล์ก่อนค่ะ');
+                return;
             }
+
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+
+            if (!email || !pass) {
+                document.getElementById('loginError').classList.remove('hidden');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password: pass
+            });
+
+            if (error || !data.user) {
+                document.getElementById('loginError').classList.remove('hidden');
+                return;
+            }
+
+            const { data: adminRow, error: adminError } = await supabaseClient
+                .from('admins')
+                .select('id')
+                .eq('user_id', data.user.id)
+                .maybeSingle();
+
+            if (adminError || !adminRow) {
+                await supabaseClient.auth.signOut();
+                document.getElementById('loginError').classList.remove('hidden');
+                customAlert('บัญชีนี้เข้าสู่ระบบได้ แต่ยังไม่ได้ถูกเพิ่มเป็นแอดมินในตาราง admins');
+                return;
+            }
+
+            isAdmin = true;
+            closeAdminLogin();
+            document.body.classList.add('admin-mode');
+            document.getElementById('adminBadge').classList.remove('hidden');
+            document.getElementById('adminToggleText').innerText = 'ออกจากระบบแอดมิน';
+            document.getElementById('adminToggleIcon').className = 'fas fa-sign-out-alt';
+            document.getElementById('loginError').classList.add('hidden');
+
+            await loadStoreSettings();
+            await loadReviews();
+            customAlert('เข้าสู่ระบบแอดมินสำเร็จค่ะ 🛠️');
+        }
+
+        async function logoutAdmin() {
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            isAdmin = false;
+            document.body.classList.remove('admin-mode');
+            document.getElementById('adminBadge').classList.add('hidden');
+            document.getElementById('adminToggleText').innerText = 'เข้าสู่ระบบแอดมิน';
+            document.getElementById('adminToggleIcon').className = 'fas fa-user-shield';
         }
 
         function openEditMusicModal() {
@@ -1105,6 +1158,7 @@
                 if (newValue !== null && newValue.trim() !== "") {
                     storeData[field] = newValue.trim();
                     renderStoreInfo();
+                    saveStoreSettings();
                 }
             }, isTextarea);
         }
@@ -1122,6 +1176,7 @@
                                         if (newFbUrl) {
                                             storeData.fbUrl = newFbUrl.trim();
                                             renderStoreInfo();
+                                            saveStoreSettings();
                                             customAlert("อัปเดตช่องทางการติดต่อเรียบร้อยแล้วค่ะ ✨");
                                         }
                                     });
@@ -1142,6 +1197,270 @@
             document.execCommand("copy");
             document.body.removeChild(temp);
             customAlert(`คัดลอก LINE ID: "${cleanId}" เรียบร้อยแล้วค่ะ! 📋`);
+        }
+
+        // ============================================================
+        // SUPABASE DATABASE FUNCTIONS
+        // ============================================================
+
+        function ensureSupabase() {
+            if (!supabaseConfigured || !supabaseClient) {
+                customAlert('ยังไม่ได้ตั้งค่า Supabase กรุณาใส่ Project URL และ anon key ก่อนค่ะ');
+                return false;
+            }
+            return true;
+        }
+
+        function mapStoreRow(row) {
+            if (!row) return;
+            storeData = {
+                ...storeData,
+                siteName: row.site_name ?? storeData.siteName,
+                name: row.name ?? storeData.name,
+                desc: row.description ?? storeData.desc,
+                lineId: row.line_id ?? storeData.lineId,
+                fbName: row.fb_name ?? storeData.fbName,
+                fbUrl: row.fb_url ?? storeData.fbUrl,
+                hours: row.hours ?? storeData.hours,
+                img: row.logo_url ?? storeData.img,
+                musicUrl: row.music_url ?? storeData.musicUrl,
+                decoImage: row.deco_image ?? storeData.decoImage,
+                decoImageTop: row.deco_image_top ?? storeData.decoImageTop,
+                effectImage: row.effect_image ?? storeData.effectImage
+            };
+        }
+
+        function mapReviewRow(row) {
+            return {
+                id: row.id,
+                name: row.name,
+                rating: row.rating,
+                type: row.type,
+                text: row.text,
+                img: row.img,
+                likes: row.likes ?? 0,
+                isLiked: localStorage.getItem(`review_liked_${row.id}`) === '1',
+                adminLiked: row.admin_liked ?? false,
+                reply: row.reply ?? '',
+                date: row.created_at
+            };
+        }
+
+        async function loadStoreSettings() {
+            if (!ensureSupabase()) return;
+
+            const { data, error } = await supabaseClient
+                .from('store_settings')
+                .select('*')
+                .order('created_at', { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+            if (error) {
+                console.error(error);
+                customAlert('โหลดข้อมูลร้านค้าไม่สำเร็จ: ' + error.message);
+                return;
+            }
+
+            if (data) {
+                mapStoreRow(data);
+                renderStoreInfo();
+                renderDecoTopImage();
+                renderDecoImage();
+            } else if (isAdmin) {
+                const { data: created, error: createError } = await supabaseClient
+                    .from('store_settings')
+                    .insert({
+                        site_name: storeData.siteName,
+                        name: storeData.name,
+                        description: storeData.desc,
+                        line_id: storeData.lineId,
+                        fb_name: storeData.fbName,
+                        fb_url: storeData.fbUrl,
+                        hours: storeData.hours,
+                        logo_url: storeData.img,
+                        music_url: storeData.musicUrl,
+                        deco_image: storeData.decoImage,
+                        deco_image_top: storeData.decoImageTop,
+                        effect_image: storeData.effectImage
+                    })
+                    .select()
+                    .single();
+
+                if (!createError && created) {
+                    mapStoreRow(created);
+                    renderStoreInfo();
+                    renderDecoTopImage();
+                    renderDecoImage();
+                }
+            }
+        }
+
+        async function saveStoreSettings() {
+            if (!ensureSupabase() || !isAdmin) return false;
+
+            const payload = {
+                site_name: storeData.siteName,
+                name: storeData.name,
+                description: storeData.desc,
+                line_id: storeData.lineId,
+                fb_name: storeData.fbName,
+                fb_url: storeData.fbUrl,
+                hours: storeData.hours,
+                logo_url: storeData.img,
+                music_url: storeData.musicUrl,
+                deco_image: storeData.decoImage,
+                deco_image_top: storeData.decoImageTop,
+                effect_image: storeData.effectImage
+            };
+
+            const { data: existing } = await supabaseClient
+                .from('store_settings')
+                .select('id')
+                .order('created_at', { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+            let result;
+            if (existing?.id) {
+                result = await supabaseClient
+                    .from('store_settings')
+                    .update(payload)
+                    .eq('id', existing.id)
+                    .select()
+                    .single();
+            } else {
+                result = await supabaseClient
+                    .from('store_settings')
+                    .insert(payload)
+                    .select()
+                    .single();
+            }
+
+            if (result.error) {
+                console.error(result.error);
+                customAlert('บันทึกข้อมูลร้านค้าไม่สำเร็จ: ' + result.error.message);
+                return false;
+            }
+
+            if (result.data) mapStoreRow(result.data);
+            return true;
+        }
+
+        async function loadReviews() {
+            if (!ensureSupabase()) return;
+
+            const { data, error } = await supabaseClient
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                customAlert('โหลดรีวิวไม่สำเร็จ: ' + error.message);
+                return;
+            }
+
+            reviews = (data || []).map(mapReviewRow);
+            renderReviews();
+            renderStoreInfo();
+        }
+
+        async function checkAdminSession() {
+            if (!supabaseConfigured) return;
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session?.user) return;
+
+            const { data: adminRow } = await supabaseClient
+                .from('admins')
+                .select('id')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+
+            if (adminRow) {
+                isAdmin = true;
+                document.body.classList.add('admin-mode');
+                document.getElementById('adminBadge').classList.remove('hidden');
+                document.getElementById('adminToggleText').innerText = 'ออกจากระบบแอดมิน';
+                document.getElementById('adminToggleIcon').className = 'fas fa-sign-out-alt';
+            } else {
+                await supabaseClient.auth.signOut();
+            }
+        }
+
+        async function saveReviewToDatabase(review) {
+            if (!ensureSupabase()) return null;
+
+            const { data, error } = await supabaseClient
+                .from('reviews')
+                .insert({
+                    name: review.name,
+                    rating: review.rating,
+                    type: review.type,
+                    text: review.text,
+                    img: review.img,
+                    likes: 0,
+                    admin_liked: false,
+                    reply: ''
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error(error);
+                customAlert('ส่งรีวิวไม่สำเร็จ: ' + error.message);
+                return null;
+            }
+
+            return mapReviewRow(data);
+        }
+
+        async function updateReviewInDatabase(id, payload) {
+            if (!ensureSupabase() || !isAdmin) return false;
+
+            const { error } = await supabaseClient
+                .from('reviews')
+                .update(payload)
+                .eq('id', id);
+
+            if (error) {
+                console.error(error);
+                customAlert('บันทึกรีวิวไม่สำเร็จ: ' + error.message);
+                return false;
+            }
+            return true;
+        }
+
+        async function deleteReviewFromDatabase(id) {
+            if (!ensureSupabase() || !isAdmin) return false;
+
+            const { error } = await supabaseClient
+                .from('reviews')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error(error);
+                customAlert('ลบรีวิวไม่สำเร็จ: ' + error.message);
+                return false;
+            }
+            return true;
+        }
+
+        async function likeReviewInDatabase(id) {
+            if (!ensureSupabase()) return false;
+
+            const { error } = await supabaseClient.rpc('increment_review_likes', {
+                row_id: id
+            });
+
+            if (error) {
+                console.error(error);
+                customAlert('กดถูกใจไม่สำเร็จ: ' + error.message);
+                return false;
+            }
+            return true;
         }
 
         function renderStoreInfo() {
@@ -1228,7 +1547,7 @@
             document.getElementById('imagePreviewBox').classList.add('hidden');
         }
 
-        function submitReview(e) {
+        async function submitReview(e) {
             e.preventDefault();
 
             if (currentRating === 0) {
@@ -1236,8 +1555,10 @@
                 return;
             }
 
+            if (!ensureSupabase()) return;
+
             const name = document.getElementById('reviewerName').value.trim();
-            const text = document.getElementById('reviewText').value.trim();
+            const textValue = document.getElementById('reviewText').value.trim();
             const type = document.querySelector('input[name="reviewType"]:checked').value;
 
             if (type === 'bad' && !currentUploadedImageData) {
@@ -1246,21 +1567,17 @@
                 return;
             }
 
-            const newReview = {
-                id: Date.now(),
-                name: name,
+            const savedReview = await saveReviewToDatabase({
+                name,
                 rating: currentRating,
-                type: type,
-                text: text,
-                img: currentUploadedImageData,
-                date: new Date().toISOString(),
-                likes: 0,
-                isLiked: false,
-                adminLiked: false,
-                reply: ""
-            };
+                type,
+                text: textValue,
+                img: currentUploadedImageData
+            });
 
-            reviews.unshift(newReview);
+            if (!savedReview) return;
+
+            reviews.unshift(savedReview);
             renderReviews();
             renderStoreInfo();
 
@@ -1272,7 +1589,7 @@
             updateStarsUI();
             toggleImageRequirement();
 
-            customAlert('ขอบคุณสำหรับรีวิวของคุณค่ะ! ข้อมูลถูกบันทึกเรียบร้อยแล้ว 💕');
+            customAlert('ขอบคุณสำหรับรีวิวของคุณค่ะ! ข้อมูลถูกบันทึกลงฐานข้อมูลเรียบร้อยแล้ว 💕');
         }
 
         function formatDate(isoString) {
@@ -1401,68 +1718,88 @@
             });
         }
 
-        function likeReview(id) {
+        async function likeReview(id) {
             const review = reviews.find(r => r.id === id);
-            if (review) {
-                if (review.isLiked) {
-                    review.likes = Math.max(0, review.likes - 1);
-                    review.isLiked = false;
-                    if (isAdmin) review.adminLiked = false;
-                } else {
-                    review.likes += 1;
-                    review.isLiked = true;
-                    if (isAdmin) review.adminLiked = true;
-                }
+            if (!review) return;
 
-                const countEl = document.getElementById(`like-count-${id}`);
-                const iconEl = document.getElementById(`like-icon-${id}`);
-                const adminBadgeEl = document.getElementById(`admin-like-badge-${id}`);
+            // ป้องกันการกดซ้ำจากเบราว์เซอร์เดิม
+            if (review.isLiked) return;
 
-                if (countEl) countEl.innerText = review.likes;
-                if (iconEl) {
-                    iconEl.className = review.isLiked 
-                        ? 'fas fa-heart text-[var(--pink3)]' 
-                        : 'fas fa-heart text-gray-300';
-                }
-                
-                if (adminBadgeEl) {
-                    if (review.adminLiked) {
-                        adminBadgeEl.classList.remove('hidden');
-                        adminBadgeEl.classList.add('flex');
-                    } else {
-                        adminBadgeEl.classList.add('hidden');
-                        adminBadgeEl.classList.remove('flex');
-                    }
-                }
+            const ok = await likeReviewInDatabase(id);
+            if (!ok) return;
+
+            review.likes += 1;
+            review.isLiked = true;
+            localStorage.setItem(`review_liked_${id}`, '1');
+
+            if (isAdmin) {
+                review.adminLiked = true;
+                await updateReviewInDatabase(id, { admin_liked: true });
+            }
+
+            const countEl = document.getElementById(`like-count-${id}`);
+            const iconEl = document.getElementById(`like-icon-${id}`);
+            const adminBadgeEl = document.getElementById(`admin-like-badge-${id}`);
+
+            if (countEl) countEl.innerText = review.likes;
+            if (iconEl) iconEl.className = 'fas fa-heart text-[var(--pink3)]';
+
+            if (adminBadgeEl && review.adminLiked) {
+                adminBadgeEl.classList.remove('hidden');
+                adminBadgeEl.classList.add('flex');
             }
         }
 
-        function replyToReview(id) {
+        async function replyToReview(id) {
             const review = reviews.find(r => r.id === id);
             if (review) {
-                customPrompt("ตอบกลับรีวิวลูกค้า", review.reply || "", (replyText) => {
+                customPrompt("ตอบกลับรีวิวลูกค้า", review.reply || "", async (replyText) => {
                     review.reply = replyText;
+                    const ok = await updateReviewInDatabase(id, { reply: replyText });
+                    if (!ok) return;
                     renderReviews();
                     customAlert("บันทึกการตอบกลับเรียบร้อยแล้วค่ะ");
                 }, true);
             }
         }
 
-        function deleteReview(id) {
-            customPrompt("ยืนยันการลบรีวิว", "", (val) => {
+        async function deleteReview(id) {
+            customPrompt("ยืนยันการลบรีวิว", "", async (val) => {
+                const ok = await deleteReviewFromDatabase(id);
+                if (!ok) return;
+
                 reviews = reviews.filter(r => r.id !== id);
                 renderReviews();
                 renderStoreInfo();
+                localStorage.removeItem(`review_liked_${id}`);
                 customAlert("ลบรีวิวเรียบร้อยแล้วค่ะ");
             }, false, "กดตกลงเพื่อลบรีวิวที่ไม่เหมาะสมนี้ออกจากระบบ");
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             renderStoreInfo();
             renderReviews();
             renderDecoTopImage();
             renderDecoImage();
-            
+
+            if (!supabaseConfigured) {
+                console.warn('Supabase ยังไม่ได้ตั้งค่า: กรุณาแก้ SUPABASE_URL และ SUPABASE_ANON_KEY');
+            } else {
+                await checkAdminSession();
+                await loadStoreSettings();
+                await loadReviews();
+
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'SIGNED_OUT') {
+                        isAdmin = false;
+                        document.body.classList.remove('admin-mode');
+                        document.getElementById('adminBadge').classList.add('hidden');
+                        document.getElementById('adminToggleText').innerText = 'เข้าสู่ระบบแอดมิน';
+                        document.getElementById('adminToggleIcon').className = 'fas fa-user-shield';
+                    }
+                });
+            }
+
             const savedState = localStorage.getItem('jaidee_music_state');
             if (savedState === 'off') {
                 isPlaying = false;
