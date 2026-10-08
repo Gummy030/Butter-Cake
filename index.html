@@ -80,7 +80,6 @@
         }
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        /* ปรับปรุงเอฟเฟกต์ลอยขึ้นไปจนสุดแบบนุ่มนวลและไม่หนาแน่น */
         @keyframes floatUpSmooth {
             0% {
                 transform: translateY(0) scale(0.8);
@@ -285,7 +284,7 @@
                         
                         <button onclick="openEditThemeModal()" class="w-full bg-white hover:bg-[var(--green1)]/40 text-[var(--brown)] text-xs font-medium py-2.5 px-3 rounded-xl border border-[var(--green2)]/40 transition flex items-center justify-between shadow-2xs">
                             <span class="flex items-center gap-2">
-                                <i class="fas fa-palette text-[var(--green2)]"></i> แก้ไขโทนสีเว็บไซต์
+                                <i class="fas fa-palette text-[var(--green2)]"></i> แก้ไขโทนสีเว็บไซต์ (ครบทุกจุด)
                             </span>
                             <i class="fas fa-chevron-right text-2xs opacity-50"></i>
                         </button>
@@ -389,7 +388,6 @@
                 </div>
 
                 <div class="glass-panel rounded-3xl p-6 shadow-soft">
-                    <!-- ส่วนหัวข้อและการกดกรองรีวิว -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                         <h2 class="text-lg font-bold flex items-center gap-2 text-[var(--brown)]">
                             <span class="w-7 h-7 rounded-full bg-[var(--green1)]/40 flex items-center justify-center text-[var(--green2)] text-sm">
@@ -398,7 +396,6 @@
                             รีวิวจากลูกค้า (<span id="review-count">0</span>)
                         </h2>
                         
-                        <!-- ปุ่มกรองรีวิวแยกตามประเภท -->
                         <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1">
                             <button onclick="setReviewFilter('all')" id="filter-btn-all" class="text-xs font-semibold px-3.5 py-1.5 rounded-full transition bg-[var(--green2)] text-white shadow-xs whitespace-nowrap">
                                 ทั้งหมด (<span id="count-all">0</span>)
@@ -539,13 +536,13 @@
         </div>
     </div>
 
-    <!-- Edit Theme Colors Modal -->
+    <!-- Edit Theme Colors Modal (ปรับปรุงให้แก้สีได้ครบทุกจุด) -->
     <div id="editThemeModal" class="fixed inset-0 bg-[var(--brown)]/40 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-xl animate-pop max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-bold mb-1 text-[var(--brown)] flex items-center gap-2">
                 <i class="fas fa-palette text-[var(--green2)]"></i> แก้ไขโทนสีเว็บไซต์
             </h3>
-            <p class="text-2xs text-[var(--brown)]/70 mb-4">เลือกชุดสีสำเร็จรูป หรือปรับแต่งสีรายจุดได้ทันที</p>
+            <p class="text-2xs text-[var(--brown)]/70 mb-4">เลือกชุดสีสำเร็จรูป หรือเลือกปรับแต่งสีรายจุดได้ตามใจชอบ</p>
             
             <div class="space-y-2 mb-5">
                 <p class="text-xs font-bold text-[var(--brown)]">1. เลือกชุดสีสำเร็จรูป:</p>
@@ -558,16 +555,44 @@
                         <span class="font-medium text-2xs">มัทฉะกรีน</span>
                         <div class="flex gap-1"><span class="w-3.5 h-3.5 rounded-full bg-[#a8ded0]"></span><span class="w-3.5 h-3.5 rounded-full bg-[#52b788]"></span></div>
                     </button>
+                    <button onclick="applyColorPreset('lavender')" class="p-2.5 rounded-xl border border-gray-200 text-left hover:border-purple-300 text-xs flex items-center justify-between">
+                        <span class="font-medium text-2xs">ลาเวนเดอร์</span>
+                        <div class="flex gap-1"><span class="w-3.5 h-3.5 rounded-full bg-[#c8b6ff]"></span><span class="w-3.5 h-3.5 rounded-full bg-[#9b5de5]"></span></div>
+                    </button>
+                    <button onclick="applyColorPreset('warmWarm')" class="p-2.5 rounded-xl border border-gray-200 text-left hover:border-red-300 text-xs flex items-center justify-between">
+                        <span class="font-medium text-2xs">วอร์มพิงค์</span>
+                        <div class="flex gap-1"><span class="w-3.5 h-3.5 rounded-full bg-[#ffb3c1]"></span><span class="w-3.5 h-3.5 rounded-full bg-[#fb6f92]"></span></div>
+                    </button>
                 </div>
             </div>
 
             <div class="space-y-3 mb-5 pt-3 border-t border-gray-100">
-                <p class="text-xs font-bold text-[var(--brown)]">2. ปรับแต่งสีรายจุด:</p>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div><label class="block text-2xs mb-1">สีพื้นหลังเว็บ</label><input type="color" id="picker-pink2" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"></div>
-                    <div><label class="block text-2xs mb-1">สีชมพูหลัก/ปุ่ม</label><input type="color" id="picker-pink3" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"></div>
-                    <div><label class="block text-2xs mb-1">สีเขียวไฮไลท์</label><input type="color" id="picker-green2" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"></div>
-                    <div><label class="block text-2xs mb-1">สีตัวอักษรหลัก</label><input type="color" id="picker-brown" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"></div>
+                <p class="text-xs font-bold text-[var(--brown)]">2. ปรับแต่งสีรายจุด (แก้ได้ครบทั้ง 6 จุด):</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">1. สีพื้นหลังเว็บ</label>
+                        <input type="color" id="picker-pink2" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">2. สีชมพูอ่อน (กรอบ/พื้นไอคอน)</label>
+                        <input type="color" id="picker-pink1" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">3. สีชมพูหลัก (ปุ่ม/ไฮไลท์)</label>
+                        <input type="color" id="picker-pink3" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">4. สีเขียวอ่อน (วงกลมตกแต่ง)</label>
+                        <input type="color" id="picker-green1" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">5. สีเขียวหลัก (ปุ่มส่ง/ไอคอน)</label>
+                        <input type="color" id="picker-green2" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="block text-2xs mb-1 font-medium">6. สีตัวอักษรหลัก</label>
+                        <input type="color" id="picker-brown" class="w-full h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5">
+                    </div>
                 </div>
             </div>
             
@@ -609,10 +634,9 @@
     <script>
         // ============================================================
         // SUPABASE CONFIG
-        // นำค่า Project URL และ Publishable key จาก Supabase มาใส่ตรงนี้
         // ============================================================
-        const SUPABASE_URL = 'https://mpqdwpfqsmskvfgmzxna.supabase.co';
-        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_60yx2bfStIoIqnnzDkQwPQ_Tjn_kYqE';
+        const SUPABASE_URL = 'https://mpqdwpfqsmskvfgmzxna.supabase.co'; //แก้ตรงนี้
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_60yx2bfStIoIqnnzDkQwPQ_Tjn_kYqE'; //แก้ตรงนี้
 
         const supabaseConfigured =
             SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
@@ -651,12 +675,14 @@
 
         const themePresets = {
             default: { pink1: '#fee0e9', pink2: '#fff1f6', pink3: '#f5c9d4', green1: '#c7dd9d', green2: '#8da65c', brown: '#6e513b' },
-            matcha: { pink1: '#d8f3dc', pink2: '#f1faee', pink3: '#a8ded0', green1: '#b7e4c7', green2: '#52b788', brown: '#2d3142' }
+            matcha: { pink1: '#d8f3dc', pink2: '#f1faee', pink3: '#a8ded0', green1: '#b7e4c7', green2: '#52b788', brown: '#2d3142' },
+            lavender: { pink1: '#e2daf8', pink2: '#f6f4fe', pink3: '#c8b6ff', green1: '#ffd6ff', green2: '#9b5de5', brown: '#3a2e39' },
+            warmWarm: { pink1: '#ffe5ec', pink2: '#fff0f3', pink3: '#ffb3c1', green1: '#fde2e4', green2: '#fb6f92', brown: '#4a3b32' }
         };
 
         let reviews = [];
 
-        /* --- ระบบเอฟเฟกต์ลอยพื้นหลัง (ลอยขึ้นจนสุดและมาเรื่อยๆ ไม่หนาแน่น) --- */
+        /* --- ระบบเอฟเฟกต์ลอยพื้นหลัง --- */
         function createFloatingElement() {
             const container = document.getElementById('floating-bg-container');
             if (!container) return;
@@ -664,9 +690,9 @@
             const el = document.createElement('div');
             el.className = 'floating-item';
             
-            const size = Math.floor(Math.random() * 25) + 30; // ขนาดกำลังดี 30px - 55px
-            const left = Math.random() * 95; // ตำแหน่งแนวนอนสุ่มทั่วจอ
-            const duration = Math.random() * 5 + 8; // ความเร็วในการลอย 8 - 13 วินาที
+            const size = Math.floor(Math.random() * 25) + 30;
+            const left = Math.random() * 95;
+            const duration = Math.random() * 5 + 8;
             
             el.style.width = `${size}px`;
             el.style.height = `${size}px`;
@@ -680,13 +706,11 @@
             
             container.appendChild(el);
             
-            // ลบทิ้งเมื่อลอยพ้นจอเพื่อไม่ให้เปลืองทรัพยากร
             setTimeout(() => {
                 el.remove();
             }, duration * 1000);
         }
 
-        // กำหนดความถี่ในการปล่อยออกมาทีละนิด (ทุกๆ 1.2 วินาที ไม่เยอะเกินไป)
         setInterval(createFloatingElement, 1200);
 
         function openEditEffectImageModal() {
@@ -717,7 +741,7 @@
             }
         }
 
-        /* --- ระบบเล่นเพลง YouTube API & Audio พร้อมระบบเล่นอัตโนมัติ --- */
+        /* --- ระบบเล่นเพลง YouTube API & Audio --- */
         let ytPlayer = null;
         let isYtReady = false;
         let currentMusicType = 'audio';
@@ -1045,6 +1069,35 @@
 
         function closeAdminLogin() { closeModal('adminLoginModal'); }
 
+        async function verifyAdminUser(userId) {
+            const { data: rpcResult, error: rpcError } = await supabaseClient.rpc('is_admin');
+
+            if (!rpcError) {
+                return {
+                    isAdmin: rpcResult === true,
+                    error: null
+                };
+            }
+
+            const { data: adminRow, error: tableError } = await supabaseClient
+                .from('admins')
+                .select('id')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (!tableError) {
+                return {
+                    isAdmin: !!adminRow,
+                    error: null
+                };
+            }
+
+            return {
+                isAdmin: false,
+                error: tableError || rpcError
+            };
+        }
+
         async function attemptAdminLogin() {
             if (!supabaseConfigured) {
                 customAlert('กรุณาใส่ SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ในไฟล์ก่อนค่ะ');
@@ -1065,17 +1118,25 @@
             });
 
             if (error || !data.user) {
+                console.error('Supabase login error:', error);
                 document.getElementById('loginError').classList.remove('hidden');
                 return;
             }
 
-            const { data: adminRow, error: adminError } = await supabaseClient
-                .from('admins')
-                .select('id')
-                .eq('user_id', data.user.id)
-                .maybeSingle();
+            const adminCheck = await verifyAdminUser(data.user.id);
 
-            if (adminError || !adminRow) {
+            if (adminCheck.error) {
+                console.error('Admin check error:', adminCheck.error);
+                document.getElementById('loginError').classList.remove('hidden');
+                customAlert(
+                    'ตรวจสอบสิทธิ์แอดมินไม่สำเร็จค่ะ\n\n' +
+                    'รายละเอียด: ' + (adminCheck.error.message || 'ไม่ทราบสาเหตุ') +
+                    '\nCode: ' + (adminCheck.error.code || '-')
+                );
+                return;
+            }
+
+            if (!adminCheck.isAdmin) {
                 await supabaseClient.auth.signOut();
                 document.getElementById('loginError').classList.remove('hidden');
                 customAlert('บัญชีนี้เข้าสู่ระบบได้ แต่ยังไม่ได้ถูกเพิ่มเป็นแอดมินในตาราง admins');
@@ -1109,13 +1170,18 @@
             openModal('editMusicModal');
         }
 
+        /* --- ระบบปรับแต่งสีที่เพิ่มการรับค่าครบทั้ง 6 จุด --- */
         function openEditThemeModal() {
             const root = document.documentElement;
             const style = getComputedStyle(root);
-            document.getElementById('picker-pink2').value = style.getPropertyValue('--pink2').trim() || '#fff1f6';
-            document.getElementById('picker-pink3').value = style.getPropertyValue('--pink3').trim() || '#f5c9d4';
-            document.getElementById('picker-green2').value = style.getPropertyValue('--green2').trim() || '#8da65c';
-            document.getElementById('picker-brown').value = style.getPropertyValue('--brown').trim() || '#6e513b';
+            
+            document.getElementById('picker-pink1').value = style.getPropertyValue('--pink1').trim() || storeData.themePink1 || '#fee0e9';
+            document.getElementById('picker-pink2').value = style.getPropertyValue('--pink2').trim() || storeData.themePink2 || '#fff1f6';
+            document.getElementById('picker-pink3').value = style.getPropertyValue('--pink3').trim() || storeData.themePink3 || '#f5c9d4';
+            document.getElementById('picker-green1').value = style.getPropertyValue('--green1').trim() || storeData.themeGreen1 || '#c7dd9d';
+            document.getElementById('picker-green2').value = style.getPropertyValue('--green2').trim() || storeData.themeGreen2 || '#8da65c';
+            document.getElementById('picker-brown').value = style.getPropertyValue('--brown').trim() || storeData.themeBrown || '#6e513b';
+            
             openModal('editThemeModal');
         }
 
@@ -1129,16 +1195,12 @@
                 storeData.themeGreen2 = preset.green2;
                 storeData.themeBrown = preset.brown;
 
-                const root = document.documentElement;
-                root.style.setProperty('--pink1', preset.pink1);
-                root.style.setProperty('--pink2', preset.pink2);
-                root.style.setProperty('--pink3', preset.pink3);
-                root.style.setProperty('--green1', preset.green1);
-                root.style.setProperty('--green2', preset.green2);
-                root.style.setProperty('--brown', preset.brown);
+                applyThemeColors();
 
+                document.getElementById('picker-pink1').value = preset.pink1;
                 document.getElementById('picker-pink2').value = preset.pink2;
                 document.getElementById('picker-pink3').value = preset.pink3;
+                document.getElementById('picker-green1').value = preset.green1;
                 document.getElementById('picker-green2').value = preset.green2;
                 document.getElementById('picker-brown').value = preset.brown;
             }
@@ -1155,13 +1217,10 @@
         }
 
         async function saveCustomThemeColors() {
-            const root = document.documentElement;
-            const computed = getComputedStyle(root);
-
-            storeData.themePink1 = computed.getPropertyValue('--pink1').trim() || storeData.themePink1;
+            storeData.themePink1 = document.getElementById('picker-pink1').value;
             storeData.themePink2 = document.getElementById('picker-pink2').value;
             storeData.themePink3 = document.getElementById('picker-pink3').value;
-            storeData.themeGreen1 = computed.getPropertyValue('--green1').trim() || storeData.themeGreen1;
+            storeData.themeGreen1 = document.getElementById('picker-green1').value;
             storeData.themeGreen2 = document.getElementById('picker-green2').value;
             storeData.themeBrown = document.getElementById('picker-brown').value;
 
@@ -1233,7 +1292,6 @@
         // ============================================================
         // SUPABASE DATABASE FUNCTIONS
         // ============================================================
-        // Version: Supabase shared settings + UUID-safe likes/replies
 
         function ensureSupabase() {
             if (!supabaseConfigured || !supabaseClient) {
@@ -1426,13 +1484,14 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session?.user) return;
 
-            const { data: adminRow } = await supabaseClient
-                .from('admins')
-                .select('id')
-                .eq('user_id', session.user.id)
-                .maybeSingle();
+            const adminCheck = await verifyAdminUser(session.user.id);
 
-            if (adminRow) {
+            if (adminCheck.error) {
+                console.error('Admin session check error:', adminCheck.error);
+                return;
+            }
+
+            if (adminCheck.isAdmin) {
                 isAdmin = true;
                 document.body.classList.add('admin-mode');
                 document.getElementById('adminBadge').classList.remove('hidden');
@@ -1813,7 +1872,6 @@
             const review = reviews.find(r => r.id === id);
             if (!review) return;
 
-            // สลับสถานะ: กดครั้งแรก = เพิ่มหัวใจ, กดอีกครั้ง = เอาหัวใจออก
             const nextLiked = !review.isLiked;
             const newCount = await setReviewLikeInDatabase(id, nextLiked);
             if (newCount === null) return;
